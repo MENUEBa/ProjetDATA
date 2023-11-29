@@ -1,0 +1,1 @@
+print('lavie est belle')
