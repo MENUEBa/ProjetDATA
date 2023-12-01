@@ -24,7 +24,7 @@ Dans un premier temps nous avons trouver le moyen de ne plus passer par l'API et
 > {"resultats":[{"id":"162MRQR","intitule":"Enseignant(e) de la conduite et  de la sécurité routière (H/F)","description":"Nous recherchons un(e) enseignant(e), titulaire du BEPECASER ou du TP ECS avec la mention B et/ou la mention BE et/ou  A serait un plus.\n\nOuverture de l'Auto Ecole du lundi au samedi. Votre p .... etc 
 
 > [!CAUTION]
-> Nous avons mis en annexe l'ensemble des chose à installer dans Extension_a_avoir.py
+> Nous avons mis en annexe l'ensemble des chose à installer dans Extension_a_avoir.py. Il faut aussu faire attention les POST et GET doivent peut-être séparer car on peut avoir des problèmes si on fait tout en même temps
 
 **Conclusion** 
 
@@ -120,6 +120,8 @@ topic_distribution = lda_model.get_document_topics(doc_bow)
 
 7. Le classement et les résultats
 
+**Resulat de l'algorithme CV_Topics.py**
+
 >Classement 1 - ID de l'offre : Chargé administratif et financier (H/F), Score : 0.3333333532015483
 Classement 2 - ID de l'offre : ASM73 Responsable de salle en village vacance (H/F), Score : 0.3333333532015483
 Classement 3 - ID de l'offre : Mécanicien / Mécanicienne automobile confirmé(e) (H/F), Score : 0.3333333532015483
@@ -130,3 +132,6 @@ Classement 7 - ID de l'offre : Enseignant(e) de la conduite et de la sécurité 
 Classement 8 - ID de l'offre : Conducteur d'engin (H/F), Score : 0.3333333482344945
 Classement 9 - ID de l'offre : Mécanicien maintenance des systèmes climatiques (H/F), Score : 0.3333333482344945
 Classement 10 - ID de l'offre : Canalisateur (H/F) PLEF63800, Score : 0.3333333482344945
+
+Nous avons donc ici le résultat final de notre matching du CV avec les emplois le 01.12.2023. 
+Au final nous pouvoir voir que le matching est assez cohérent avec le poste ici par exemple on peut voir qu'en première position on a **"Chargé administratif et financier"**. Nous avons utilisé ici un CV de comptable
