@@ -120,7 +120,7 @@ topic_distribution = lda_model.get_document_topics(doc_bow)
 
 7. Le classement et les résultats
 
-**Resulat de l'algorithme CV_Topics.py**
+**Resulat de l'algorithme Classement_offres.py**
 
 >Classement 1 - ID de l'offre : Chargé administratif et financier (H/F), Score : 0.3333333532015483
 Classement 2 - ID de l'offre : ASM73 Responsable de salle en village vacance (H/F), Score : 0.3333333532015483
