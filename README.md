@@ -54,7 +54,21 @@ En ce qui concerne le deuxième projet celui-ci était peut-être un pue trop am
 
 Nous voulons faire une application qui suite à un CV propose un matching sur plusieur emplois et par la suite proposer des formation adaptées pour les emplois ou il y aurait des lacunes de compétences
 
+3. Les étapes du code
 
+Dans les grandes lignes le code se décomposera ainsi : 
+
+- Faire la requête pour récuperer facilement les données de l'API
+- Transformer les données pour ne récupérer que les descriptions et les intitulés dans le but d'avoir les données sur l'emploi en question et de pouvoir ensuite voir si il matche avec le CV grâce à un algorithme LDA de machine learning
+- Une fois les données récupérées nous allons en faire des couples de tuples pour les annonces ((Id,description)) 
+- Il faut convertir le fichier PDF en une base de donnée (text) 
+- Une fois que nous avons transformé le fichier en texte nous allons le Tokeniser pour ne garder que les éléments important du CV
+- Il suffit ensuite de créer un dictionnaire afin de créer des topics grâce au modèle LDA (pour le CV en question)
+- Pour finir une fois que nous avons trouvé les Topics du CV nous allons noter suivant ces topics chaque description des emplois. Faire une moyenne des scores pour ensuite en sortir les emplois qui s'en rapproche le plus. 
+- L'obejectif final est de faire la même chose dans l'autre sens avec les 10 descriptions qui ont eu le meilleur score, faire ressortir des Topics et voir ce qui ont le moins de matche avec le CV pour voir qu'elle type de formation il manquerait à ces personnes
+
+> [!NOTE]
+> LDA(Latent Dirichlet Allocation) est une des techniques de NLP les plus connues. C’est une méthode qui repose sur de l’apprentissage non supervisée, et dont l’objectif est d’extraire les sujets principaux, représentés par un ensemble de mots, qui apparaissent dans une collection de documents.
 
 
 
