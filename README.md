@@ -1,6 +1,9 @@
 # Projet DATA
 
-MENUE Baptiste/ BUTTI GARNIER Zoe
+MENUE Baptiste
+BUTTI GARNIER Zoe
+BARATA Wendel
+DE OLIVEIRA Hassan Augusto B.
 
 ## Le concept 
 
