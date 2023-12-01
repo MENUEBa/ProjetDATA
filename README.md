@@ -119,3 +119,14 @@ topic_distribution = lda_model.get_document_topics(doc_bow)
 ```
 
 7. Le classement et les résultats
+
+>Classement 1 - ID de l'offre : Chargé administratif et financier (H/F), Score : 0.3333333532015483
+Classement 2 - ID de l'offre : ASM73 Responsable de salle en village vacance (H/F), Score : 0.3333333532015483
+Classement 3 - ID de l'offre : Mécanicien / Mécanicienne automobile confirmé(e) (H/F), Score : 0.3333333532015483
+Classement 4 - ID de l'offre : éleveur - berger (h/f), Score : 0.3333333532015483
+Classement 5 - ID de l'offre : Technicien de maintenance et dépannage chaudière (H/F), Score : 0.3333333532015483
+Classement 6 - ID de l'offre : Employé / Employée de rayon libre-service (H/F), Score : 0.3333333532015483
+Classement 7 - ID de l'offre : Enseignant(e) de la conduite et de la sécurité routière (H/F), Score : 0.3333333507180214
+Classement 8 - ID de l'offre : Conducteur d'engin (H/F), Score : 0.3333333482344945
+Classement 9 - ID de l'offre : Mécanicien maintenance des systèmes climatiques (H/F), Score : 0.3333333482344945
+Classement 10 - ID de l'offre : Canalisateur (H/F) PLEF63800, Score : 0.3333333482344945
