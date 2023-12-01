@@ -93,3 +93,29 @@ Grâce à ces chaine de caractères nous allons pouvoir les tokeniser et pouvoir
 
 6. Créer les topics
 
+**Resulat de l'algorithme CV_Topics.py**
+
+>[(0,
+  '0.077*"et" + 0.033*"les" + 0.018*"avec" + 0.018*"chef" + 0.017*"Domarin" + '
+  '0.017*"une" + 0.016*"de" + 0.011*"Licence" + 0.011*"CONTACTEZMOI" + '
+  '0.011*"Adresse"'),
+ (1,
+  '0.062*"des" + 0.055*"en" + 0.024*"la" + 0.018*"de" + 0.018*"dossiers" + '
+  '0.017*"un" + 0.016*"Je" + 0.013*"et" + 0.011*"réguliersComptable" + '
+  '0.011*"Photographie"'),
+ (2,
+  '0.125*"de" + 0.035*"du" + 0.023*"comptabilité" + 0.021*"Diplômée" + '
+  '0.021*"et" + 0.016*"dhonneur" + 0.015*"Condorcet" + 0.014*"impôts" + '
+  '0.010*"transactions" + 0.010*"passif"')]
+
+Nous pouvons donc voir clairement ici les topics que le modèle nous a généré, nous avons fait le choix d'en séléctionner que 3 car en dessous, cela n'était pas pertinent et si nous faisions plus, nous nous retrouvions avec des topics inutiles 
+
+> [!NOTE]
+> c'est un CV de comptable
+
+```ruby
+# Obtention de la distribution des topics pour la description que nous voudrons par la suite ("doc_bow" représente une description)
+topic_distribution = lda_model.get_document_topics(doc_bow)
+```
+
+7. Le classement et les résultats
