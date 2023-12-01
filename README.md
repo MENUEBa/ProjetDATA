@@ -72,7 +72,7 @@ Dans les grandes lignes le code se décomposera ainsi :
 
 6. Transformer les offres en Tuples 
 
-POur rapple la forme de nos données se trouver sous la forme de JSON, il fallait donc trouver un moyen de les rendre plus exploitable 
+Pour rapple la forme de nos données se trouver sous la forme de JSON, il fallait donc trouver un moyen de les rendre plus exploitable 
 
 **Resultat de l'algorithme Offres_Tuple.py**
 
@@ -80,7 +80,16 @@ POur rapple la forme de nos données se trouver sous la forme de JSON, il fallai
 
 Nous avons donc une liste de liste avec intitulé et description beaucoup plus facilement parcourable
 
-5. convertir le PDF en fichier txt + tokeniser 
+5. Convertir le PDF en fichier txt  
 
-L'algoryht
+**Resulat de l'algorithme Convert_PDF.py**
+
+>['COMPTABLE', 'SENIORAdeline', 'Pannier', 'PROFIL', 'PERSONNEL', 'Je', 'suis', 'une', 'comptable', 'de', 'ans', 'avec', 'une', 'expérience', 'en', 'comptabilité', 'dentreprise', 'et', 'en', 'budgétisation', 'financière', 'Je', 'recherche', 'un', 'poste', 'dans', 'un', 'environnement', 'de', 'travail', 'dynamique', 'COMPÉTENCES', 'ESSENTIELLES', 'Comptabilité', 'des', 'salaires', 'et', 'calcul', 'des', 'impôts', 'Prévisions', 'budgétaires', 'Analyse', 'des', 'coûts', 'et', 'automatisation', 'du', 'système', 'Comptes', 'clientscomptes', 'fournisseurs', 'Audit', 'interne', 'CONTACTEZMOI', 'Téléphone', 'Mobile', 'Ad ... etc
+
+Grâce à ces chaine de caractères nous allons pouvoir les tokeniser et pouvoir ensuite faire ressortir des topics à l'aide de l'algorithme de Natural language processing -> LDA 
+
+> [!CAUTION]
+> Dans l'agorithme j'ai mis le CV type dans mon Jupyter Notebook, si vous voulez le faire depuis l'ordinateur il suffit de mettre le lien cf **Design.pdf**
+
+6. Créer les topics
 
