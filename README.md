@@ -70,5 +70,17 @@ Dans les grandes lignes le code se décomposera ainsi :
 > [!NOTE]
 > LDA(Latent Dirichlet Allocation) est une des techniques de NLP les plus connues. C’est une méthode qui repose sur de l’apprentissage non supervisée, et dont l’objectif est d’extraire les sujets principaux, représentés par un ensemble de mots, qui apparaissent dans une collection de documents.
 
+6. Transformer les offres en Tuples 
 
+POur rapple la forme de nos données se trouver sous la forme de JSON, il fallait donc trouver un moyen de les rendre plus exploitable 
+
+**Resultat de l'algorithme Offres_Tuple.py**
+
+>[['Enseignant(e) de la conduite et  de la sécurité routière (H/F)', "Nous recherchons un(e) enseignant(e), titulaire du BEPECASER ou du TP ECS avec la mention B et/ou la mention BE et/ou  A serait un plus.\n\nOuverture de l'Auto Ecole du lundi au samedi. Votre planning sera à définir avec l'employeur suivant vos disponibilités lors de l'entretien. 35h/h - pas de temps partiel.\n\nLe taux horaire dépendra des différentes formations dispensées.\n\nAvantages sociaux : mutuelle entreprise, carte restaurant, heures supplémentaires rémunérées, 2 jours de congés consécutifs par semaine, 1 samedi par mois, voiture de service pour déplacement professionnel. Prime occasionnelle."], ['JOB HIVER Réceptionniste en établissement touristique(H/F) (H/F)', 'Réceptionniste en Résidence de Tourisme *** sur la station de LA PLAGNE.\nCheck in - check out / Renseignement client / Réponse téléphonique / Accueil physique en front office.\nSAISON HIVER  2023-24 à partir de DEBUT DECEMBRE 2023.'] ... etc
+
+Nous avons donc une liste de liste avec intitulé et description beaucoup plus facilement parcourable
+
+5. convertir le PDF en fichier txt + tokeniser 
+
+L'algoryht
 
