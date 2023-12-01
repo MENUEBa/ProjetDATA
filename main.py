@@ -1,7 +1,0 @@
-print('la vie ')
-hghghnnnnn
-
-
-
-
-
