@@ -20,6 +20,9 @@ Dans un premier temps nous avons trouver le moyen de ne plus passer par l'API et
 **Code Requete.py**
 > {"resultats":[{"id":"162MRQR","intitule":"Enseignant(e) de la conduite et  de la sécurité routière (H/F)","description":"Nous recherchons un(e) enseignant(e), titulaire du BEPECASER ou du TP ECS avec la mention B et/ou la mention BE et/ou  A serait un plus.\n\nOuverture de l'Auto Ecole du lundi au samedi. Votre p .... etc 
 
+> [!CAUTION]
+> Nous avons mis en annexe l'ensemble des chose à installer dans Extension_a_avoir.py
+
 **Conclusion** 
 
 Nous avons donc un fichier Json organiser de la manière suivante : 
