@@ -7,7 +7,7 @@ DE OLIVEIRA Hassan Augusto B.
 
 ## Le concept 
 
-### A partir des données de Pôle Emploi, construire un modèle prédictif pour
+### A partir des données de Pôle Emploi, construire un modèle prédictif
 
 **Objectif** : Réaliser de bout en bout un projet de Data Science dans un contexte business
 
