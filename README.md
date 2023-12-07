@@ -70,7 +70,7 @@ Dans les grandes lignes le code se décomposera ainsi :
 > [!NOTE]
 > LDA(Latent Dirichlet Allocation) est une des techniques de NLP les plus connues. C’est une méthode qui repose sur de l’apprentissage non supervisée, et dont l’objectif est d’extraire les sujets principaux, représentés par un ensemble de mots, qui apparaissent dans une collection de documents.
 
-6. Transformer les offres en Tuples 
+4. Transformer les offres en Tuples 
 
 Pour rapple la forme de nos données se trouver sous la forme de JSON, il fallait donc trouver un moyen de les rendre plus exploitable 
 
@@ -120,18 +120,28 @@ topic_distribution = lda_model.get_document_topics(doc_bow)
 
 7. Le classement et les résultats
 
-**Resulat de l'algorithme CV_Topics.py**
+**Resulat de l'algorithme Classement_Offres.py**
 
->Classement 1 - ID de l'offre : Chargé administratif et financier (H/F), Score : 0.3333333532015483
-Classement 2 - ID de l'offre : ASM73 Responsable de salle en village vacance (H/F), Score : 0.3333333532015483
-Classement 3 - ID de l'offre : Mécanicien / Mécanicienne automobile confirmé(e) (H/F), Score : 0.3333333532015483
-Classement 4 - ID de l'offre : éleveur - berger (h/f), Score : 0.3333333532015483
-Classement 5 - ID de l'offre : Technicien de maintenance et dépannage chaudière (H/F), Score : 0.3333333532015483
-Classement 6 - ID de l'offre : Employé / Employée de rayon libre-service (H/F), Score : 0.3333333532015483
-Classement 7 - ID de l'offre : Enseignant(e) de la conduite et de la sécurité routière (H/F), Score : 0.3333333507180214
-Classement 8 - ID de l'offre : Conducteur d'engin (H/F), Score : 0.3333333482344945
-Classement 9 - ID de l'offre : Mécanicien maintenance des systèmes climatiques (H/F), Score : 0.3333333482344945
-Classement 10 - ID de l'offre : Canalisateur (H/F) PLEF63800, Score : 0.3333333482344945
+>Classement 1 - ID de l'offre : Chef.fe de Projet Technique en Data & Big Data (H/F), Score : 0.49892330169677734
+Classement 2 - ID de l'offre : Data Scientist / Développeur.se Dataiku (H/F), Score : 0.49887265264987946
+Classement 3 - ID de l'offre : Coordinateur du Conseil Local de Santé Mentale (H/F), Score : 0.4986680895090103
+Classement 4 - ID de l'offre : Chargé administratif et financier (H/F), Score : 0.4985301345586777
+Classement 5 - ID de l'offre : Responsable d'Atelier de Production (H/F), Score : 0.49841374158859253
+Classement 6 - ID de l'offre : DIRECTEUR MICRO CRECHE (H/F), Score : 0.49832184612751007
+Classement 7 - ID de l'offre : Ingénieur.e DevOps / DataOps (H/F), Score : 0.49832025170326233
+Classement 8 - ID de l'offre : Chef.fe de projet digital et tech (H/F), Score : 0.4982679784297943
+Classement 9 - ID de l'offre : Infirmier / Infirmière (H/F), Score : 0.49826668202877045
+Classement 10 - ID de l'offre : CONDUCTEUR DE CHANTIER Electrotechnique Industriel (H/F), Score : 0.49822111427783966
 
 Nous avons donc ici le résultat final de notre matching du CV avec les emplois le 01.12.2023. 
 Au final nous pouvoir voir que le matching est assez cohérent avec le poste ici par exemple on peut voir qu'en première position on a **"Chargé administratif et financier"**. Nous avons utilisé ici un CV de comptable
+
+8. Automatisation
+
+Maintenant que nous avons créé toutes les focntions nécéssaires au bon focntionnement de notre algorithme nous n'avons plus qu'à faire appel à celui-ci 
+
+```ruby
+# Obtention de notre classement directement à la suite de l'appel de cette fonction
+resultats = classifier_offres_lda(biblio_CV('Design.pdf'), data_offres(), 10)
+```
+
