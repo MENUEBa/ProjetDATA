@@ -118,11 +118,7 @@ topic_distribution = lda_model.get_document_topics(doc_bow)
 
 7. Le classement et les résultats
 
-<<<<<<< HEAD
-**Resulat de l'algorithme Classement_Offres.py**
-=======
 **Resulat de l'algorithme Classement_offres.py**
->>>>>>> c0bd3691f9369887e0a3e986c1d07103e0fd3e4a
 
 >Classement 1 - ID de l'offre : Chef.fe de Projet Technique en Data & Big Data (H/F), Score : 0.49892330169677734
 Classement 2 - ID de l'offre : Data Scientist / Développeur.se Dataiku (H/F), Score : 0.49887265264987946
@@ -135,7 +131,6 @@ Classement 8 - ID de l'offre : Chef.fe de projet digital et tech (H/F), Score : 
 Classement 9 - ID de l'offre : Infirmier / Infirmière (H/F), Score : 0.49826668202877045
 Classement 10 - ID de l'offre : CONDUCTEUR DE CHANTIER Electrotechnique Industriel (H/F), Score : 0.49822111427783966
 
-<<<<<<< HEAD
 Nous avons donc ici le résultat final de notre matching du CV avec les emplois le 01.12.2023. 
 Au final nous pouvoir voir que le matching est assez cohérent avec le poste ici par exemple on peut voir qu'en première position on a **"Chargé administratif et financier"**. Nous avons utilisé ici un CV de comptable
 
@@ -147,8 +142,3 @@ Maintenant que nous avons créé toutes les focntions nécéssaires au bon focnt
 # Obtention de notre classement directement à la suite de l'appel de cette fonction
 resultats = classifier_offres_lda(biblio_CV('Design.pdf'), data_offres(), 10)
 ```
-
-=======
-Nous avons donc ici le résultat final de notre matching du CV avec les offres d'emploi proposées par Pôle Emploi le 01.12.2023. 
-Finalement, nous pouvons voir que le matching est assez cohérent avec le poste, puisqu'ici par exemple on peut voir qu'en première position on a **"Chargé administratif et financier"**. Pour rappel, nous avons utilisé ici un CV de comptable.
->>>>>>> c0bd3691f9369887e0a3e986c1d07103e0fd3e4a
