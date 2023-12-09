@@ -120,7 +120,8 @@ topic_distribution = lda_model.get_document_topics(doc_bow)
 
 **Resulat de l'algorithme Classement_offres.py**
 
->Classement 1 - ID de l'offre : Chef.fe de Projet Technique en Data & Big Data (H/F), Score : 0.49892330169677734
+```
+Classement 1 - ID de l'offre : Chef.fe de Projet Technique en Data & Big Data (H/F), Score : 0.49892330169677734
 Classement 2 - ID de l'offre : Data Scientist / Développeur.se Dataiku (H/F), Score : 0.49887265264987946
 Classement 3 - ID de l'offre : Coordinateur du Conseil Local de Santé Mentale (H/F), Score : 0.4986680895090103
 Classement 4 - ID de l'offre : Chargé administratif et financier (H/F), Score : 0.4985301345586777
@@ -130,6 +131,7 @@ Classement 7 - ID de l'offre : Ingénieur.e DevOps / DataOps (H/F), Score : 0.49
 Classement 8 - ID de l'offre : Chef.fe de projet digital et tech (H/F), Score : 0.4982679784297943
 Classement 9 - ID de l'offre : Infirmier / Infirmière (H/F), Score : 0.49826668202877045
 Classement 10 - ID de l'offre : CONDUCTEUR DE CHANTIER Electrotechnique Industriel (H/F), Score : 0.49822111427783966
+```
 
 Nous avons donc ici le résultat final de notre matching du CV avec les emplois le 01.12.2023. 
 Au final nous pouvoir voir que le matching est assez cohérent avec le poste ici par exemple on peut voir qu'en première position on a **"Chargé administratif et financier"**. Nous avons utilisé ici un CV de comptable
