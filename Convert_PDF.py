@@ -12,6 +12,7 @@ def extract_text_from_pdf(pdf_file: str) -> [str]:
         return pdf_text
 
 def convert_CV(lien):
+    import re
     
     extracted_text = extract_text_from_pdf(lien)
     CV_List = []

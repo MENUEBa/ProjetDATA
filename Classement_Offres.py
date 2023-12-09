@@ -1,6 +1,8 @@
-def classifier_offres_lda(lda_model, Offres, top_n):
+def classifier_offres_lda(lien, Offres, top_n):
     # Liste pour stocker les résultats
     resultats_classification = []
+    
+    lda_model, dictionary = biblio_CV(lien)
 
     # Parcourir chaque offre dans la liste Offres
     for offre_id, offre_description in Offres:

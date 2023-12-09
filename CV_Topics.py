@@ -20,4 +20,4 @@ def biblio_CV(lien):
     # Création d'un modèle LDA
     lda_model = LdaModel(corpus, num_topics=3, id2word=dictionary)
 
-    return lda_model
+    return lda_model, dictionary

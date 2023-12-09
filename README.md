@@ -140,5 +140,28 @@ Maintenant que nous avons créé toutes les focntions nécéssaires au bon focnt
 
 ```ruby
 # Obtention de notre classement directement à la suite de l'appel de cette fonction
-resultats = classifier_offres_lda(biblio_CV('Design.pdf'), data_offres(), 10)
+resultats = classifier_offres_lda('Design.pdf', data_offres(), 10)
 ```
+9. Exemple
+
+```ruby
+# Obtention de notre classement directement à la suite de l'appel de cette fonction
+resultats = classifier_offres_lda('/Users/menuebaptiste/Desktop/CV_Baptiste_MENUE.pdf', data_offres(), 10)
+```
+
+```
+Classement 1 - ID de l'offre : Data Scientist / Développeur.se Dataiku (H/F), Score : 0.4989863187074661
+Classement 2 - ID de l'offre : Coordinateur du Conseil Local de Santé Mentale (H/F), Score : 0.498641237616539
+Classement 3 - ID de l'offre : CONDUCTEUR DE CHANTIER Electrotechnique Industriel (H/F), Score : 0.4984162598848343
+Classement 4 - ID de l'offre : Développeur / Développeuse back-end, Score : 0.49841612577438354
+Classement 5 - ID de l'offre : Conducteur de Travaux Electrotechnique Industriel (H/F), Score : 0.4984140172600746
+Classement 6 - ID de l'offre : Responsable d'Atelier de Production (H/F), Score : 0.4983827620744705
+Classement 7 - ID de l'offre : Infirmier / Infirmière (H/F), Score : 0.4983685538172722
+Classement 8 - ID de l'offre : Ingénieur.e DevOps / DataOps (H/F), Score : 0.49829962849617004
+Classement 9 - ID de l'offre : Formateur en mathématiques - Sciences physiques - Chimie (H/F), Score : 0.498233437538147
+Classement 10 - ID de l'offre : Chef de programmes (H/F), Score : 0.49811629951000214
+```
+
+
+On peut voir que cela focntionne vraiment bien car mon CV est plus typé Data et ingénieur généraliste
+
