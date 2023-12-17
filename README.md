@@ -103,7 +103,7 @@ Grâce à ces chaînes de caractères, nous allons pouvoir les tokeniser et ensu
 > Dans cet exemple, c'est un CV de comptable qui est utilisé.
 
 > [!CAUTION]
-> Le CV type a été mis dans le Jupyter Notebook, si vous voulez le faire depuis l'ordinateur il suffit de mettre le lien, cf **Design.pdf**
+> Un CV type qui correspond au format lu par l'algorithme a été mis dans le Jupyter Notebook, si vous voulez le faire depuis l'ordinateur il suffit de mettre le lien, cf **Design.pdf**
 
 ### 3. Créer les topics
 
