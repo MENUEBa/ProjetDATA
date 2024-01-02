@@ -122,7 +122,7 @@ Grâce à ces chaînes de caractères, nous allons pouvoir les tokeniser et ensu
   '0.021*"et" + 0.016*"dhonneur" + 0.015*"Condorcet" + 0.014*"impôts" + '
   '0.010*"transactions" + 0.010*"passif"')]
 
-Nous pouvons donc voir clairement ici les topics que le modèle nous a généré, nous avons fait le choix d'en sélectionner que 3 car en-dessous, cela n'était pas pertinent et si nous faisions plus, nous nous retrouvions avec des topics inutiles 
+Nous pouvons donc voir clairement ici les topics que le modèle nous a généré, nous avons fait le choix d'en sélectionner que 3 car en-dessous, cela n'était pas pertinent et si nous faisions plus, nous nous retrouvions avec des topics inutiles. 
 
 ```ruby
 # Obtention de la distribution des topics pour la description que nous voudrons par la suite ("doc_bow" représente une description)
@@ -132,25 +132,25 @@ topic_distribution = lda_model.get_document_topics(doc_bow)
 ### 4. Le classement et les résultats
 
 > [!NOTE]
-> Cette fois, nous n'utilisons non plus un CV de comptable mais celui de l'un des membres du groupe. 
+> Pour rappel, nous utilisons ici un CV de comptable.
 
 **Resulat de l'algorithme Classement_offres.py**
 
 ```
-Classement 1 - ID de l'offre : Chef.fe de Projet Technique en Data & Big Data (H/F), Score : 0.49892330169677734
-Classement 2 - ID de l'offre : Data Scientist / Développeur.se Dataiku (H/F), Score : 0.49887265264987946
-Classement 3 - ID de l'offre : Coordinateur du Conseil Local de Santé Mentale (H/F), Score : 0.4986680895090103
-Classement 4 - ID de l'offre : Chargé administratif et financier (H/F), Score : 0.4985301345586777
-Classement 5 - ID de l'offre : Responsable d'Atelier de Production (H/F), Score : 0.49841374158859253
-Classement 6 - ID de l'offre : DIRECTEUR MICRO CRECHE (H/F), Score : 0.49832184612751007
-Classement 7 - ID de l'offre : Ingénieur.e DevOps / DataOps (H/F), Score : 0.49832025170326233
-Classement 8 - ID de l'offre : Chef.fe de projet digital et tech (H/F), Score : 0.4982679784297943
-Classement 9 - ID de l'offre : Infirmier / Infirmière (H/F), Score : 0.49826668202877045
-Classement 10 - ID de l'offre : CONDUCTEUR DE CHANTIER Electrotechnique Industriel (H/F), Score : 0.49822111427783966
+Classement 1 - ID de l'offre : Chargé administratif et financier (H/F), Score : 0.3333333532015483
+Classement 2 - ID de l'offre : ASM73 Responsable de salle en village vacance (H/F), Score : 0.3333333532015483
+Classement 3 - ID de l'offre : Mécanicien / Mécanicienne automobile confirmé(e) (H/F), Score : 0.3333333532015483
+Classement 4 - ID de l'offre : éleveur - berger (h/f), Score : 0.3333333532015483
+Classement 5 - ID de l'offre : Technicien de maintenance et dépannage chaudière (H/F), Score : 0.3333333532015483
+Classement 6 - ID de l'offre : Employé / Employée de rayon libre-service (H/F), Score : 0.3333333532015483
+Classement 7 - ID de l'offre : Enseignant(e) de la conduite et de la sécurité routière (H/F), Score : 0.3333333507180214
+Classement 8 - ID de l'offre : Conducteur d'engin (H/F), Score : 0.3333333482344945
+Classement 9 - ID de l'offre : Mécanicien maintenance des systèmes climatiques (H/F), Score : 0.3333333482344945
+Classement 10 - ID de l'offre : Canalisateur (H/F) PLEF63800, Score : 0.3333333482344945
 ```
 
-Nous avons donc ici le résultat final de notre matching du CV avec les emplois le 01.12.2023.
-Au final nous pouvoir voir que le matching est assez cohérent puisque par exemple on peut voir qu'en première position on a **"Chef.fe de Projet Technique en Data & Big Data"**.
+Nous avons donc ici le résultat final de notre matching du CV avec les offres proposées par Pôle Emploi le 01.12.2023. 
+Nous pouvons voir que le matching est assez cohérent avec le poste, puisqu'ici on a en première position une offre de **"Chargé administratif et financier"**.
 
 ### 5. Automatisation
 
