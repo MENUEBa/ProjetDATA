@@ -116,11 +116,31 @@ Le but est donc de faire la requête qu'une fois et nous stockons ensuite le res
 
 ## II. le code matching 
 
-### 1. LDA (Latent Dirichlet Allocation)
+### 1. Convertir le PDF 
 
+Dans un premier temps le plus important était de trouver un moyen d'avoir un algorithme qui convertit un fichier PDF en une liste de mot pour pouvoir ensuite avoir un algorithme de machine learning sur le natural language 
 
-### 2. Convertir le PDF  
+Nous avons utilisé 
 
+PyPDF2 est une bibliothèque Python open-source qui permet de manipuler des fichiers PDF. Elle fournit des fonctionnalités pour extraire du texte, fusionner ou diviser des fichiers PDF, extraire des métadonnées et bien plus encore. Voici quelques explications sur les fonctionnalités principales de PyPDF2 :
+
+1. Lecture de fichiers PDF : PyPDF2 permet de lire le contenu textuel des fichiers PDF. Vous pouvez extraire du texte à partir de pages spécifiques ou de l'ensemble du document.
+2. Extraction de métadonnées : En plus du texte, PyPDF2 permet d'extraire des métadonnées des fichiers PDF, telles que le titre, l'auteur, la date de création, etc.
+
+### 2. LDA (Latent Dirichlet Allocation)
+
+LDA est une technique de modélisation de sujets largement utilisée en analyse de texte. Elle est basée sur l'hypothèse que les documents sont générés à partir d'un mélange de sujets, et chaque sujet est une distribution de mots. Voici une description de base de son fonctionnement :
+
+1. Données d'entrée : Un ensemble de documents texte.
+2. Prétraitement : Les documents sont prétraités pour la tokenisation, la suppression des mots vides, la normalisation, etc.
+3. Construction d'un vocabulaire : Tous les mots uniques dans les documents sont collectés pour former un vocabulaire.
+4. Création de la matrice de documents-termes : Chaque document est représenté sous forme d'un vecteur de la taille du vocabulaire, où chaque élément représente la fréquence d'un mot dans le document.
+5. Entraînement du modèle LDA : L'algorithme LDA est utilisé pour trouver un certain nombre de sujets dans les documents et leur distribution respective.
+6. Interprétation des sujets : Les mots les plus probables pour chaque sujet sont extraits, permettant d'interpréter le sujet.
+7. Application du modèle : Une fois entraîné, le modèle peut être utilisé pour classifier de nouveaux documents en fonction de leur distribution de sujets.
+
+> [!NOTE]
+> LDA est un modèle probabiliste et non supervisé, ce qui signifie qu'il est capable de découvrir les structures cachées (les sujets) dans les données sans étiquettes préalables. Il est largement utilisé dans la fouille de textes, la recommandation de contenu, la classification de documents, etc.
 
 ### 6. Exemple
 
