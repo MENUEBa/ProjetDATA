@@ -78,88 +78,49 @@ Pour celle-ci, les grandes lignes du code devront se décomposer ainsi :
 > [!NOTE]
 > LDA (Latent Dirichlet Allocation) est une des techniques de NLP les plus connues. C’est une méthode qui repose sur de l’apprentissage non supervisé, et dont l’objectif est d’extraire les sujets principaux, représentés par un ensemble de mots, qui apparaissent dans une collection de documents.
 
-#
-## I. Le matching de CV
 
-### 1. Transformer les offres en tuples 
+## I. la base donnés
 
-Pour rappel, nos données se trouvernt sous format JSON, il fallait donc trouver un moyen de les rendre plus exploitables. 
+Lors de notre mise en place du code nous avons remarqué que notre requête API sur pôle emploi avait une date d'expiration. Le problème majeur de cela est qu'il faille créer un nouveau compte et surtout de devoir refaire une requête insomnia. 
 
-**Resultat de l'algorithme Offres_Tuple.py**
-
->[['Enseignant(e) de la conduite et  de la sécurité routière (H/F)', "Nous recherchons un(e) enseignant(e), titulaire du BEPECASER ou du TP ECS avec la mention B et/ou la mention BE et/ou  A serait un plus.\n\nOuverture de l'Auto Ecole du lundi au samedi. Votre planning sera à définir avec l'employeur suivant vos disponibilités lors de l'entretien. 35h/h - pas de temps partiel.\n\nLe taux horaire dépendra des différentes formations dispensées.\n\nAvantages sociaux : mutuelle entreprise, carte restaurant, heures supplémentaires rémunérées, 2 jours de congés consécutifs par semaine, 1 samedi par mois, voiture de service pour déplacement professionnel. Prime occasionnelle."], ['JOB HIVER Réceptionniste en établissement touristique(H/F) (H/F)', 'Réceptionniste en Résidence de Tourisme *** sur la station de LA PLAGNE.\nCheck in - check out / Renseignement client / Réponse téléphonique / Accueil physique en front office.\nSAISON HIVER  2023-24 à partir de DEBUT DECEMBRE 2023.'] ... etc
-
-Nous avons donc une liste de listes avec l'intitulé et la description de chaque offre, beaucoup plus facile à parcourir.
-
-### 2. Convertir le PDF en fichier txt  
-
-**Resulat de l'algorithme Convert_PDF.py**
-
->['COMPTABLE', 'SENIORAdeline', 'Pannier', 'PROFIL', 'PERSONNEL', 'Je', 'suis', 'une', 'comptable', 'de', 'ans', 'avec', 'une', 'expérience', 'en', 'comptabilité', 'dentreprise', 'et', 'en', 'budgétisation', 'financière', 'Je', 'recherche', 'un', 'poste', 'dans', 'un', 'environnement', 'de', 'travail', 'dynamique', 'COMPÉTENCES', 'ESSENTIELLES', 'Comptabilité', 'des', 'salaires', 'et', 'calcul', 'des', 'impôts', 'Prévisions', 'budgétaires', 'Analyse', 'des', 'coûts', 'et', 'automatisation', 'du', 'système', 'Comptes', 'clientscomptes', 'fournisseurs', 'Audit', 'interne', 'CONTACTEZMOI', 'Téléphone', 'Mobile', 'Ad ... etc
-
-Grâce à ces chaînes de caractères, nous allons pouvoir les tokeniser et ensuite faire ressortir des topics à l'aide de l'algorithme de Natural language processing -> LDA 
-
-> [!NOTE]
-> Dans cet exemple, c'est un CV de comptable qui est utilisé.
-
-> [!CAUTION]
-> Un CV type qui correspond au format lu par l'algorithme a été mis dans le Jupyter Notebook, si vous voulez le faire depuis l'ordinateur il suffit de mettre le lien, cf **Design.pdf**
-
-### 3. Créer les topics
-
-**Resulat de l'algorithme CV_Topics.py**
-
->[(0,
-  '0.077*"et" + 0.033*"les" + 0.018*"avec" + 0.018*"chef" + 0.017*"Domarin" + '
-  '0.017*"une" + 0.016*"de" + 0.011*"Licence" + 0.011*"CONTACTEZMOI" + '
-  '0.011*"Adresse"'),
- (1,
-  '0.062*"des" + 0.055*"en" + 0.024*"la" + 0.018*"de" + 0.018*"dossiers" + '
-  '0.017*"un" + 0.016*"Je" + 0.013*"et" + 0.011*"réguliersComptable" + '
-  '0.011*"Photographie"'),
- (2,
-  '0.125*"de" + 0.035*"du" + 0.023*"comptabilité" + 0.021*"Diplômée" + '
-  '0.021*"et" + 0.016*"dhonneur" + 0.015*"Condorcet" + 0.014*"impôts" + '
-  '0.010*"transactions" + 0.010*"passif"')]
-
-Nous pouvons donc voir clairement ici les topics que le modèle nous a généré, nous avons fait le choix d'en sélectionner que 3 car en-dessous, cela n'était pas pertinent et si nous faisions plus, nous nous retrouvions avec des topics inutiles. 
+Le problème étant que nous avons transformé la requête de manière à ce qu'elle soit directement intégrée dans le code comme suit 
 
 ```ruby
-# Obtention de la distribution des topics pour la description que nous voudrons par la suite ("doc_bow" représente une description)
-topic_distribution = lda_model.get_document_topics(doc_bow)
-```
+def acces():
+    import json
+    import http.client
 
-### 4. Le classement et les résultats
+    conn = http.client.HTTPSConnection("entreprise.pole-emploi.fr")
+    payload = "client_id=PAR_projetv2_e02793cbd340bab1d37781b12b99e06d25ed9273604c2061d1ad1e5b4f167758&client_secret=92cdb43ccf89844279e6bfc8ffbe1a80e301098cb4ad33978c50db544b57c2db&scope=api_offresdemploiv2%20application_PAR_projetv2_e02793cbd340bab1d37781b12b99e06d25ed9273604c2061d1ad1e5b4f167758%20o2dsoffre&grant_type=client_credentials"
+    headers = {
+    'cookie': "so007-peame-affinity-prod-p=ab3a188a2c2569a2; BIGipServerPOOL_PROD02-SDDC-K8S_HTTPS=!CZLZdbzdUC0otKfGs4t8wMAtY5XJdQbCTKXrEvxLEYwITeobaBoVFreqmeQBUTUhoPkhCRjQ9MeJwA%3D%3D; TS0188135e=01b3abf0a218d19ca4f52cf0f6e614517b15ec521b0cbb5974a9c19c85b2141c1f3cb60fa064923c42b73b76a9afa4ba184abe84a2",
+    'Content-Type': "application/x-www-form-urlencoded",
+    'User-Agent': "insomnia/8.2.0"
+    }
+    conn.request("POST", "/connexion/oauth2/access_token?realm=%2Fpartenaire", payload, headers)
+    res = conn.getresponse()
+    data = res.read()
+    donnee = data.decode("utf-8")
+    # Récupérez le token
+    donnee_JSON = json.loads(donnee)
+    access_token = donnee_JSON.get('access_token')
+    return access_token
+```
+Une fois que nous avons intégré le code et que la requête est expirée nous devons ensuite en faire une nouvel et il faut changer tout le code nous avons donc eu l'idée de séparer le code de la requête et de le mettre à part 
+
+Le but est donc de faire la requête qu'une fois et nous stockons ensuite le resultat de la requête dans une base de donnés sous la forme de JSON 
+
 
 > [!NOTE]
-> Pour rappel, nous utilisons ici un CV de comptable.
+> Pour actualiser la base de donnés il suffit donc juste de faire la requête et cela n'a donc aucun impact sur le code global de matching de CV .
 
-**Resulat de l'algorithme Classement_offres.py**
+## II. le code matching 
 
-```
-Classement 1 - ID de l'offre : Chargé administratif et financier (H/F), Score : 0.3333333532015483
-Classement 2 - ID de l'offre : ASM73 Responsable de salle en village vacance (H/F), Score : 0.3333333532015483
-Classement 3 - ID de l'offre : Mécanicien / Mécanicienne automobile confirmé(e) (H/F), Score : 0.3333333532015483
-Classement 4 - ID de l'offre : éleveur - berger (h/f), Score : 0.3333333532015483
-Classement 5 - ID de l'offre : Technicien de maintenance et dépannage chaudière (H/F), Score : 0.3333333532015483
-Classement 6 - ID de l'offre : Employé / Employée de rayon libre-service (H/F), Score : 0.3333333532015483
-Classement 7 - ID de l'offre : Enseignant(e) de la conduite et de la sécurité routière (H/F), Score : 0.3333333507180214
-Classement 8 - ID de l'offre : Conducteur d'engin (H/F), Score : 0.3333333482344945
-Classement 9 - ID de l'offre : Mécanicien maintenance des systèmes climatiques (H/F), Score : 0.3333333482344945
-Classement 10 - ID de l'offre : Canalisateur (H/F) PLEF63800, Score : 0.3333333482344945
-```
+### 1. LDA (Latent Dirichlet Allocation)
 
-Nous avons donc ici le résultat final de notre matching du CV avec les offres proposées par Pôle Emploi le 01.12.2023. 
-Nous pouvons voir que le matching est assez cohérent avec le poste, puisqu'ici on a en première position une offre de **"Chargé administratif et financier"**.
 
-### 5. Automatisation
+### 2. Convertir le PDF  
 
-Maintenant que nous avons créé toutes les fonctions nécéssaires au bon fonctionnement de notre algorithme nous n'avons plus qu'à faire appel à celui-ci 
-
-```ruby
-# Obtention de notre classement directement à la suite de l'appel de cette fonction
-resultats = classifier_offres_lda('Design.pdf', data_offres(), 10)
-```
 
 ### 6. Exemple
 
