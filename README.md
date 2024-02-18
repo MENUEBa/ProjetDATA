@@ -126,47 +126,95 @@ L'avantage de cette solution est qu'elle permet de contourner le problème d'exp
 
 L'inconvénient est que du coup nous n'avons pas des données qui s'actualisent en permanence avec les nouvelles offres d'emploi comme lorsque l'on passe directement par l'API, car on crée une base de données à un instant t qui après n'est plus modifiée. Malheureusement, nous n'avons pas trop d'autres solutions si l'on veut pouvoir industrialiser le projet. On pourra simplement faire attention à réactualiser manuellement régulièrement la base de données en refaisant tourner le code "Cree_db_pole_emploi.py" pour fournir à l'utilisateur une base de données qui ne date pas trop.
 
-/////////
-
 ## I. Le matching du CV avec les offres d'emploi
+La première grosse partie de notre code doit nous permettre, à partir d'un CV sous format PDF, de trouver les 10 offres d'emploi de Pôle Emploi qui correspondent le plus à un utilisateur. 
 
-Pour celle-ci, les grandes lignes du code devront se décomposer ainsi : 
-- Faire la requête pour récuperer facilement les données de l'API (à ce moment-là du projet, cela avait déjà été fait à l'étape 1 ci-dessus)
-- Transformer les données pour ne récupérer que les descriptions et les intitulés dans le but d'avoir les données sur l'emploi en question et de pouvoir ensuite voir s'il matche avec le CV. On fait cela grâce à un algorithme LDA de Machine Learning
-- Une fois les données récupérées, nous allons en faire des couples de tuples pour les annonces ((Id,description)) 
-- Il faut convertir le fichier PDF en une base de donnée (text) 
-- Une fois que nous avons transformé le fichier en texte nous allons le Tokeniser pour ne garder que les éléments importants du CV
-- Il suffit ensuite de créer un dictionnaire afin de créer des topics grâce au modèle LDA (pour le CV en question)
+Les grandes étapes sont les suivantes : 
+
+### 1. Récupération des informations clés sur les offres d'emploi
+On commence par récupérer uniquement les descriptions et les intitulés des offres de la base de données de Pôle Emploi, qui sont les inforamtions essentielles à recuillir pour pouvoir ensuite voir quelles offres matchent avec le CV. 
+```ruby
+def data_offres(db):
+
+    import json
+
+    with open(db, "r") as file:
+      data = json.load(file)
+
+    # Liste pour stocker les tuples (ID, description)
+    Offres = []
+
+    # Parcourir chaque emploi dans les résultats
+    for emploi_resultat in data['resultats']:
+        emploi_idV = emploi_resultat.get('id', None)
+        emploi_id = emploi_resultat.get('intitule', None)
+        description = emploi_resultat.get('description', None)
+
+        if emploi_id is not None and description is not None:
+            Offres.append([emploi_idV, emploi_id, description])
+
+    return Offres
+```
+
 - Pour finir, une fois que nous avons trouvé les Topics du CV, nous allons noter suivant ces topics chaque description des emplois. On fait ensuite une moyenne des scores pour en sortir les emplois qui s'en rapprochent le plus. 
 - L'objectif final est de faire la même chose dans l'autre sens avec les 10 descriptions qui ont eu le meilleur score, faire ressortir des Topics et voir ceux qui ont le moins de matchs avec le CV. Cela permet de déterminer quel type de formation il manquerait à la personne pour coller parfaitement à l'offre d'emploi.
 
-> [!NOTE]
-> LDA (Latent Dirichlet Allocation) est une des techniques de NLP les plus connues. C’est une méthode qui repose sur de l’apprentissage non supervisé, et dont l’objectif est d’extraire les sujets principaux, représentés par un ensemble de mots, qui apparaissent dans une collection de documents.
-
-
-### 1. Convertir le PDF 
-
-Dans un premier temps le plus important était de trouver un moyen d'avoir un algorithme qui convertit un fichier PDF en une liste de mot pour pouvoir ensuite avoir un algorithme de machine learning sur le natural language 
-
-Nous avons utilisé 
+### 2. Convertir le CV en texte 
+Ensuite, il nous a fallu trouver un algorithme permettant de convertir le CV passé en entré comme fichier PDF en texte facilement manipulable sous python. C'est ainsi que nous avons trouvé la librairie PyPDF2, qui nous permet de transformer tout le texte contenu dans le fichier PDF en une liste de mots.
 > [!NOTE]
 > PyPDF2 est une bibliothèque Python open-source qui permet de manipuler des fichiers PDF. Elle fournit des fonctionnalités permettant par exemple d'extraire du texte, defusionner ou diviser des fichiers PDF, ou encore d'extraire des
-> métadonnées d'un texte. Vous pouvez retrouver la documentation ici : https://pypdf2.readthedocs.io/en/3.0.0/ 
+> métadonnées d'un texte. Vous pouvez retrouver la documentation ici : https://pypdf2.readthedocs.io/en/3.0.0/
+```ruby
+def extract_text_from_pdf(pdf_file: str) -> [str]:
+    import PyPDF2
+    import json
+    import http.client
+    with open(pdf_file, 'rb') as pdf:
+        reader = PyPDF2.PdfReader (pdf, strict=False)
+        pdf_text = []
 
-### 2. LDA (Latent Dirichlet Allocation)
-
-LDA est une technique de modélisation de sujets largement utilisée en analyse de texte. Elle est basée sur l'hypothèse que les documents sont générés à partir d'un mélange de sujets, et chaque sujet est une distribution de mots. Voici une description de base de son fonctionnement :
-
-1. Données d'entrée : Un ensemble de documents texte.
-2. Prétraitement : Les documents sont prétraités pour la tokenisation, la suppression des mots vides, la normalisation, etc.
-3. Construction d'un vocabulaire : Tous les mots uniques dans les documents sont collectés pour former un vocabulaire.
-4. Création de la matrice de documents-termes : Chaque document est représenté sous forme d'un vecteur de la taille du vocabulaire, où chaque élément représente la fréquence d'un mot dans le document.
-5. Entraînement du modèle LDA : L'algorithme LDA est utilisé pour trouver un certain nombre de sujets dans les documents et leur distribution respective.
-6. Interprétation des sujets : Les mots les plus probables pour chaque sujet sont extraits, permettant d'interpréter le sujet.
-7. Application du modèle : Une fois entraîné, le modèle peut être utilisé pour classifier de nouveaux documents en fonction de leur distribution de sujets.
+        for page in reader.pages:
+            content = page.extract_text()
+            pdf_text.append (content)
+        return pdf_text
+```
+### 3. Analyse du contenu du CV
+Tout au long de ce projet, lorsqu'il était question d'analyser du texte, nous avons fait le choix d'utiliser la méthode de Machine Learning LDA. 
 
 > [!NOTE]
-> LDA est un modèle probabiliste et non supervisé, ce qui signifie qu'il est capable de découvrir les structures cachées (les sujets) dans les données sans étiquettes préalables. Il est largement utilisé dans la fouille de textes, la recommandation de contenu, la classification de documents, etc.
+> LDA (Latent Dirichlet Allocation) est une des techniques de Natural Language Processing les plus connues. C’est une méthode probabiliste qui repose sur de l’apprentissage non supervisé, basée sur l'hypothèse que les documents sont générés à
+> partir d'un mélange de sujets, et chaque sujet est une distribution de mots. Son objectif est alors d’extraire les sujets et thèmes principaux, représentés par un ensemble de mots, qui apparaissent dans un texte. Elle fonctionne globalement
+> ainsi :
+> 1. Données d'entrée : Un ensemble de documents texte.
+> 2. Prétraitement : Les documents sont prétraités pour la tokenisation, la suppression des mots vides, la normalisation, etc.
+> 3. Construction d'un vocabulaire : Tous les mots uniques dans les documents sont collectés pour former un vocabulaire.
+> 4. Création de la matrice de documents-termes : Chaque document est représenté sous forme d'un vecteur de la taille du vocabulaire, où chaque élément représente la fréquence d'un mot dans le document.
+> 5. Entraînement du modèle LDA : L'algorithme LDA est utilisé pour trouver un certain nombre de sujets dans les documents et leur distribution respective.
+> 6. Interprétation des sujets : Les mots les plus probables pour chaque sujet sont extraits, permettant d'interpréter le sujet.
+> 7. Application du modèle : Une fois entraîné, le modèle peut être utilisé pour classifier de nouveaux documents en fonction de leur distribution de sujets.
+
+Ainsi, une fois le CV transformé en texte, nous commençons par le nettoyer et le présenter sous la forme d'une unique chaîne de caractères, pour être sûrs que le modèle LDA puisse ensuite être correctement appliqué.
+
+nous allons le Tokeniser pour ne garder que les éléments importants du CV
+- Il suffit ensuite de créer un dictionnaire afin de créer des topics grâce au modèle LDA (pour le CV en question)
+```ruby
+def convert_CV(lien):
+    import re
+
+    extracted_text = extract_text_from_pdf(lien)
+    CV_List = []
+
+    for text in extracted_text:
+        CV_List.append(text)
+
+    CV_List_s = CV_List[0].splitlines()
+
+    #Cette partie de l'algorithme est présente pour spliter les informations directement
+    texte_seul = ' '.join(CV_List_s)  # Convertir la liste en une seule chaîne de texte
+    texte_seul = re.sub(r'[^a-zA-ZÀ-ÖØ-öø-ÿ\s]', '', texte_seul)
+    texte_seul = texte_seul.split()
+    return texte_seul)
+```
 
 ### 6. Exemple
 
@@ -189,6 +237,8 @@ Classement 10 - ID de l'offre : Chef de programmes (H/F), Score : 0.498116299510
 ```
 
 On peut voir que cela fonctionne bien car le CV passé en entrée est typé Data et ingénieur généraliste, et donc que les offres qui ressortent sont en accord avec ce profil. 
+
+
 
 ## II. Trouver les compétences manquantes 
 
