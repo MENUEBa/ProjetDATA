@@ -156,9 +156,6 @@ def data_offres(db):
     return Offres
 ```
 
-- Pour finir, une fois que nous avons trouvé les Topics du CV, nous allons noter suivant ces topics chaque description des emplois. On fait ensuite une moyenne des scores pour en sortir les emplois qui s'en rapprochent le plus. 
-- L'objectif final est de faire la même chose dans l'autre sens avec les 10 descriptions qui ont eu le meilleur score, faire ressortir des Topics et voir ceux qui ont le moins de matchs avec le CV. Cela permet de déterminer quel type de formation il manquerait à la personne pour coller parfaitement à l'offre d'emploi.
-
 ### 2. Convertir le CV en texte 
 Ensuite, il nous a fallu trouver un algorithme permettant de convertir le CV passé en entré comme fichier PDF en texte facilement manipulable sous python. C'est ainsi que nous avons trouvé la librairie PyPDF2, qui nous permet de transformer tout le texte contenu dans le fichier PDF en une liste de mots.
 > [!NOTE]
@@ -194,9 +191,6 @@ Tout au long de ce projet, lorsqu'il était question d'analyser du texte, nous a
 > 7. Application du modèle : Une fois entraîné, le modèle peut être utilisé pour classifier de nouveaux documents en fonction de leur distribution de sujets.
 
 Ainsi, une fois le CV transformé en texte, nous commençons par le nettoyer et le présenter sous la forme d'une unique chaîne de caractères, pour être sûrs que le modèle LDA puisse ensuite être correctement appliqué.
-
-nous allons le Tokeniser pour ne garder que les éléments importants du CV
-- Il suffit ensuite de créer un dictionnaire afin de créer des topics grâce au modèle LDA (pour le CV en question)
 ```ruby
 def convert_CV(lien):
     import re
@@ -215,14 +209,93 @@ def convert_CV(lien):
     texte_seul = texte_seul.split()
     return texte_seul)
 ```
-
-### 6. Exemple
-
+Puis cette chaîne de texte est tokenisée pour ne garder que les éléments importants présents dans le CV, et on crée un dictionnaire qui va permettre de stocker les topics identifiés dans le texte grâce au modèle LDA. 
 ```ruby
-# Obtention de notre classement directement à la suite de l'appel de cette fonction
-resultats = classifier_offres_lda('/Users/menuebaptiste/Desktop/CV_Baptiste_MENUE.pdf', data_offres(), 10)
+def biblio_CV(lien):
+
+    from gensim import corpora
+    from gensim.models import LdaModel
+    from pprint import pprint
+
+    # Exemple de corpus de documents
+    documents = convert_CV(lien)
+
+    # Tokenisation des documents en mots
+    tokenized_documents = [doc.split() for doc in documents]
+
+    # Création d'un dictionnaire à partir du corpus
+    dictionary = corpora.Dictionary(tokenized_documents)
+
+    # Création de la représentation du corpus en tant que sac de mots (BoW)
+    corpus = [dictionary.doc2bow(doc) for doc in tokenized_documents]
+
+    # Création d'un modèle LDA
+    lda_model = LdaModel(corpus, num_topics=3, id2word=dictionary)
+
+    return lda_model, dictionary
 ```
 
+### 4. Classement des offres d'emploi les plus pertinentes
+Pour finir, la dernière étape de cette partie du code consiste à établir le classement des offres d'emploi qui matchent le plus avec le contenu du CV analyse grâce à la LDA. Pour cela, une fois que nous avons trouvé les topics les plus importants du CV, nous notons les descriptions des offres de Pôle Emploi suivant ces topics. On fait ensuite pour chaque offre une moyenne des scores obtenus sur les différents topics, et on classe alors toutes les offres d'emploi selon ce score. Les 10 offres d'emploi avec le meilleur score sont ainsi enregistrées dans un fichier en format JSON (top_offres), qui sera renvoyé à l'utilisateur. La fonction nous renvoie également la liste des ID des 10 offres du classement (resultats_id), car nous en aurons besoin par la suite pour récupérer les compétences requises pour chacun de ces emplois.
+
+```ruby
+def classifier_offres_lda(lien, top_n, db):
+
+    import json
+
+    # Liste pour stocker les résultats
+    Offres=data_offres(db)
+    resultats_classification = []
+    resultats_id=[]
+
+    lda_model, dictionary = biblio_CV(lien)
+
+    # Parcourir chaque offre dans la liste Offres
+    for offre_idV, offre_id, offre_description in Offres:
+        # Tokenisation du document
+        tokenized_doc = offre_description.split()
+
+        # Convertir le document en une représentation BoW à l'aide du dictionnaire existant
+        doc_bow = dictionary.doc2bow(tokenized_doc)
+
+        # Obtention de la distribution des topics pour le document
+        topic_distribution = lda_model.get_document_topics(doc_bow)
+
+        # Calcul de la moyenne des scores pour chaque topic
+        moyenne_scores = sum(score for topic, score in topic_distribution) / len(topic_distribution)
+
+        # Ajout du tuple (ID de l'offre, moyenne des scores) à la liste des résultats
+        resultats_classification.append({
+            "Classement": 0,
+            "ID de l'offre": offre_idV,
+            "Intitulé de l'offre": offre_id,
+            "Score": moyenne_scores
+        })
+
+    # Trier les offres par score de la meilleure à la moins bonne
+    top_offres = sorted(resultats_classification, key=lambda x: x["Score"], reverse=True)[:top_n]
+
+    for i, offre in enumerate(top_offres, start=1):
+        offre["Classement"] = i
+        resultats_id.append(offre["ID de l'offre"])
+
+    # Enregistrer la liste des offres au format JSON
+    nom_fichier_sortie_json = "classement_offres.json"
+    with open(nom_fichier_sortie_json, 'w', encoding='utf-8') as fichier_sortie_json:
+        json.dump(top_offres, fichier_sortie_json, ensure_ascii=False, indent=2)
+
+    return resultats_id, top_offres
+```
+
+> [!NOTE]
+> Nous avons pensé notre projet comme étant à destination des travailleurs en quête de reconversion profesionnelle. Ainsi, nous avons fait le choix de réaliser un classement des 10 offres d'emploi les plus pertinentes pour le profil de l'utilisateur, car nous nous sommes dit
+> que cela laissait suffisamment de choix à celui-ci pour qu'il ne puisse garder ensuite parmi ces 10 propositions que les offres qui l'intéressent vraiment et lui plaisent personnellement le plus.
+
+### 5. Test
+Voici le classement que l'on peut obtenir à la suite de l'appel de la dernière fonction :
+```ruby
+resultats = classifier_offres_lda('/Users/menuebaptiste/Desktop/CV_Baptiste_MENUE.pdf', data_offres(), 10, database) # La database est celle contenant les offres de Pole Emploi
+```
 ```
 Classement 1 - ID de l'offre : Data Scientist / Développeur.se Dataiku (H/F), Score : 0.4989863187074661
 Classement 2 - ID de l'offre : Coordinateur du Conseil Local de Santé Mentale (H/F), Score : 0.498641237616539
@@ -236,9 +309,7 @@ Classement 9 - ID de l'offre : Formateur en mathématiques - Sciences physiques 
 Classement 10 - ID de l'offre : Chef de programmes (H/F), Score : 0.49811629951000214
 ```
 
-On peut voir que cela fonctionne bien car le CV passé en entrée est typé Data et ingénieur généraliste, et donc que les offres qui ressortent sont en accord avec ce profil. 
-
-
+On peut voir que le résultat est cohérent car le CV passé en entrée est celui d'un élève ingénieur généraliste avec un profil orienté data, et donc que les offres qui ressortent sont totalement en accord avec ce profil. 
 
 ## II. Trouver les compétences manquantes 
 
