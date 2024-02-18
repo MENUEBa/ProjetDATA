@@ -149,11 +149,9 @@ Pour celle-ci, les grandes lignes du code devront se décomposer ainsi :
 Dans un premier temps le plus important était de trouver un moyen d'avoir un algorithme qui convertit un fichier PDF en une liste de mot pour pouvoir ensuite avoir un algorithme de machine learning sur le natural language 
 
 Nous avons utilisé 
-
-PyPDF2 est une bibliothèque Python open-source qui permet de manipuler des fichiers PDF. Elle fournit des fonctionnalités pour extraire du texte, fusionner ou diviser des fichiers PDF, extraire des métadonnées et bien plus encore. Voici quelques explications sur les fonctionnalités principales de PyPDF2 :
-
-1. Lecture de fichiers PDF : PyPDF2 permet de lire le contenu textuel des fichiers PDF. Vous pouvez extraire du texte à partir de pages spécifiques ou de l'ensemble du document.
-2. Extraction de métadonnées : En plus du texte, PyPDF2 permet d'extraire des métadonnées des fichiers PDF, telles que le titre, l'auteur, la date de création, etc.
+> [!NOTE]
+> PyPDF2 est une bibliothèque Python open-source qui permet de manipuler des fichiers PDF. Elle fournit des fonctionnalités permettant par exemple d'extraire du texte, defusionner ou diviser des fichiers PDF, ou encore d'extraire des
+> métadonnées d'un texte. Vous pouvez retrouver la documentation ici : https://pypdf2.readthedocs.io/en/3.0.0/ 
 
 ### 2. LDA (Latent Dirichlet Allocation)
 
