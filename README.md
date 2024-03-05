@@ -179,7 +179,7 @@ def extract_text_from_pdf(pdf_file: str) -> [str]:
 Tout au long de ce projet, lorsqu'il était question d'analyser du texte, nous avons fait le choix d'utiliser la méthode de Machine Learning LDA. 
 
 > [!NOTE]
-> LDA (Latent Dirichlet Allocation) est une des techniques de Natural Language Processing les plus connues. C’est une méthode probabiliste qui repose sur de l’apprentissage non supervisé, basée sur l'hypothèse que les documents sont générés à
+> **LDA (Latent Dirichlet Allocation)** est une des techniques de Natural Language Processing les plus connues. C’est une méthode probabiliste qui repose sur de l’apprentissage non supervisé, basée sur l'hypothèse que les documents sont générés à
 > partir d'un mélange de sujets, et chaque sujet est une distribution de mots. Son objectif est alors d’extraire les sujets et thèmes principaux, représentés par un ensemble de mots, qui apparaissent dans un texte. Elle fonctionne globalement
 > ainsi :
 > 1. Données d'entrée : Un ensemble de documents texte.
@@ -439,9 +439,9 @@ La deuxième partie du code nous permet alors d'identifier les compétences manq
 ```
 Le résultat des compétences est cohérent avec les offres d'emploi, et ces compétences sont effectivement des compétences qui sont manquantes dans le profil de la personne dont on a utilisé le CV (exceptées peut-être les compétences renvoyées pour l'offre n°9 de Comptable clientèle, ID 162MCXY).
 
-## III. Le matching des compétences manquantes avec les formations professionnelles 
+## III. Proposer des formations professionnelles adaptées 
 
-La dernière grande partie du code doit nous permettre de renvoyer les formations professionnelles qui vont permettre à l'utilisateur d'acquérir les compétences manquantes identifiées dans la partie II. Une fois de plus, il s'agit donc essentiellement de faire du Natural Language Processing, mais cette fois non pas sur un document PDF (le CV) mais sur un document CSV (la liste des formations professionnelles).
+La dernière grande partie du code doit nous permettre de renvoyer les formations professionnelles qui vont permettre à l'utilisateur d'acquérir les compétences manquantes identifiées dans la partie II. 
 
 > [!NOTE]
 > Nous n'avons pas trouvé sur le site des données Pôle Emploi ou sur data.gouv d'API pour les formations professionnelles. Cela nous aurait permis d'avoir des données actualisées en permanence, mais nous avons malheureusement uniquement trouvé des données statiques téléchargeables sous
@@ -449,4 +449,109 @@ La dernière grande partie du code doit nous permettre de renvoyer les formation
 > de formations est très large, tout le monde y a droit grâce à son CPF et les données sont mises à jour de manière quasiment quotidienne. Le fichier csv des formations professionnelles que nous utiliserons a ainsi été téléchargé le 10/01/2024 depuis le lien suivant :
 > https://www.data.gouv.fr/fr/datasets/moncompteformation-loffre-de-formation/#/resources.  
 > Pour une meilleure pertinence des résultats, il faudrait re-télécharger régulièrement cette base de données afin d'en fournir une plus actualisée lors de l'utilisation de notre code. 
+
+### 1. L'algortihme de matching des compétences manquantes avec les formations
+
+Une fois de plus, il s'agit essentiellement de faire du Natural Language Processing, mais cette fois non pas sur un document PDF (le CV) mais sur un document CSV (la liste des formations professionnelles). Nous avons fait le choix cette fois de varier nos méthodes et de ne pas utiliser la librairie PyPDF2 et la technique de LDA mais plutôt une vectorisation de texte par la méthode TF-IDF et une analyse de similarité cosinus, grâce aux fonctions de la libraire sklearn.
+
+> [!NOTE]
+> La **vectorisation TF-IDF (Term Frequency - Inverse Document Frequency)** est une technique de pondération utilisée en traitement du langage naturel (NLP) pour évaluer l'importance d'un mot dans un document par rapport à un ensemble de documents. Le calcul de TF-IDF se base sur deux
+> composantes :
+> 1. La fréquence d'un terme dans un document (TF): Plus le mot m apparait dans le document d, plus sa valeur TF est élevée.  La formule de base est : **TF(m, d) = nb_occurrences(m, d) / nb_mots_total(d)**.
+> 2. La rareté d'un terme dans un ensemble de documents (IDF): Plus le mot m est rare dans l'ensemble de documents D, plus sa valeur IDF est élevée. La formule de base est : **IDF(m, D) = log(nb_documents(D) / nb_documents_contenant(m, D))**.
+> 3. Le calcul de TF-IDF est ainsi le produit de TF et IDF : **TF-IDF(m, d, D) = TF(m, d) * IDF(m, D)**. Cette pondération permet de donner plus d'importance aux mots fréquents dans un document mais rares dans l'ensemble des documents.
+
+> [!NOTE]
+> La **similarité cosinus** est une mesure utilisée en analyse de texte et en traitement du langage naturel pour évaluer la similitude entre deux vecteurs de caractéristiques. Elle consiste à calculer le cosinus de l'angle entre deux vecteurs A et B :  
+> **Similarité cosinus (A,B) = produit scalaire entre A et B /( Normme euclidienne de A * Norme euclidienne de B )**  
+> Le résultat ainsi obtenu est compris entre -1 et 1. Une similarité de 1 indique que les vecteurs sont identiques, 0 indique une indépendance linéaire (pas de similitude), et -1 indique une dissimilarité parfaite.  
+
+La méthode utilisée ici est ainsi la suivante :
+1. On crée une liste de phrases avec les informations qui nous intéressent concernant toutes les formations professionnelles proposées.  
+2. Pour chaque offre d'emploi, on ajoute chaque compétence manquante dans la liste précédente sous forme d'une phrase également.  
+3. On crée alors une matrice TF-IDF pour convertir ces phrases en une matrice de caractéristiques, une des dimensions de la matrice étant les formations et l'autre la compétence manquante en question.
+4. On calcule ensuite la similarité cosinus entre la compétence cherchée et les formations grâce à la matrice précédente.  
+5. On classe les formations en fonction de leur similairité avec la compétence et on ne garde que les 3 meilleures.
+
+```ruby
+def formation(liste_comp, catalogue_formations):
+    import pandas as pd
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+    import json
+
+    df = pd.read_csv(catalogue_formations, on_bad_lines='skip', sep=';', low_memory=False)
+
+    desired_columns = ['numero_formation', 'intitule_formation', 'points_forts']
+    df_selected = df[desired_columns]
+
+    resultat_du_dictionnaire = df_selected.to_dict(orient='records')
+
+    nom_fichier_sortie = "resultats_formations.json"
+
+    # Liste pour stocker les résultats au format JSON
+    resultats_json = []
+
+    for comp_par_emploi1 in liste_comp:
+        comp_par_emploi2 = comp_par_emploi1[0]
+        id_offre, competence_cherche_list = comp_par_emploi2[0], comp_par_emploi2[1:]
+
+        # Dictionnaire pour stocker les résultats
+        resultat_par_competence = {"Id de l'offre d'emploi": id_offre, "Competences": []}
+
+        for competence_cherche in competence_cherche_list:
+            # Liste des phrases dans resultat_du_dictionnaire
+            phrases = [str(item.get('points_forts', [])) for item in resultat_du_dictionnaire]
+
+            # Ajout de la phrase d'intérêt à la liste
+            phrases.append(competence_cherche)
+
+            # Création de la matrice TF-IDF
+            vectorizer = TfidfVectorizer()
+            tfidf_matrix = vectorizer.fit_transform(phrases)
+
+            # Calcul de la similarité du cosinus entre les phrases
+            similarites = cosine_similarity(tfidf_matrix[-1], tfidf_matrix[:-1])
+
+            # Obtenir les indices triés des phrases les plus similaires
+            indices_similaires = similarites.argsort()[0][::-1]
+
+            # Limiter le nombre de correspondances à ajouter à la liste de formations
+            limite_correspondances = 3
+            formations = [resultat_du_dictionnaire[i] for i in indices_similaires[:limite_correspondances]]
+
+            # Stocker les résultats dans le dictionnaire
+            resultat_competence = {"Competence": competence_cherche, "Formations": []}
+
+            for formacao in formations:
+                formation_dict = {
+                    "Numéro formation": formacao['numero_formation'],
+                    "Intitulé": formacao['intitule_formation'],
+                    "Points forts": formacao['points_forts']
+                }
+                resultat_competence["Formations"].append(formation_dict)
+
+            resultat_par_competence["Competences"].append(resultat_competence)
+
+        resultats_json.append(resultat_par_competence)
+
+    # Enregistrer la liste des résultats au format JSON
+    with open(nom_fichier_sortie, 'w', encoding='utf-8') as fichier_sortie_json:
+        json.dump(resultats_json, fichier_sortie_json, ensure_ascii=False, indent=2)
+
+    return resultats_json
+```
+Cette fonction prend en entrée la liste des compétences manquantes à l'utilisateur ainsi que la base de données csv contenant le détail des formations professionnelles, et renvoie un document JSON contenant pour chacune des 10 offres et chacune des 2 compétences associées, 3 formations qui devraient permettre d'acquérir cette compétence --> soit au total 60 formations.   
+Nous avons fait le choix d'avoir un format JSON en sortie de manière à avoir un résultat plus clair et plus présentable pour l'utilisateur.
+
+> [!NOTE]
+> On voit que le nombre de suggestions de formations renvoyé est très important. Toutefois, il s'est avéré nécéssaire pour chaque compétence de fournir plusieurs propositions de formations, car nous nous sommmes rendu compte que les résultats ne sont pas toujours tous pertinents. Cela est
+> notamment liés au fait  que les descriptions des formations ne sont pas toujours très complètes et détaillées, ce qui rend le matching plus difficile, ainsi qu'au fait que les mots et phrases utilisées pour décrire les compétences sont parfois très génériques et donc peuvent être
+> reliées à une très grande variété de formations (par exemple "personnel", "contrôler", "organiser", "comprendre"...)  
+> Nous nous sommes ainsi dit qu'en proposant 3 formations par compétence, cela permettait à l'utilisateur d'avoir suffisamment de choix pour sélectionner la formation qui soit vraiment la plus pertinente en fonction de son profil, de ses besoins, de ses capacités, et des offres d'emploi
+> qui l'intéressent le plus.
+
+### 2. Test
+
+## Finalisation 
 
