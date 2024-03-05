@@ -122,7 +122,7 @@ def cree_db():
 > [!NOTE]
 > L'ensemble du code permettant d'accéder à l'API et de stocker les données dans une base de données est : Cree_db_pole_emploi.py
 
-L'avantage de cette solution est qu'elle permet de contourner le problème d'expiration de l'autorisation d'accès à l'API de Pôle Emploi et fais en sorte que n'importe qui puisse utiliser notre code avec les données de Pôle Emploi, et ce y compris dans plusieurs mois. 
+L'avantage de cette solution est qu'elle permet de contourner le problème d'expiration de l'autorisation d'accès à l'API de Pôle Emploi et fait en sorte que n'importe qui puisse utiliser notre code avec les données de Pôle Emploi, et ce y compris dans plusieurs mois. 
 
 L'inconvénient est que du coup nous n'avons pas des données qui s'actualisent en permanence avec les nouvelles offres d'emploi comme lorsque l'on passe directement par l'API, car on crée une base de données à un instant t qui après n'est plus modifiée. Malheureusement, nous n'avons pas trop d'autres solutions si l'on veut pouvoir industrialiser le projet. On pourra simplement faire attention à réactualiser manuellement régulièrement la base de données en refaisant tourner le code "Cree_db_pole_emploi.py" pour fournir à l'utilisateur une base de données qui ne date pas trop.
 
@@ -312,5 +312,131 @@ Classement 10 - ID de l'offre : Chef de programmes (H/F), Score : 0.498116299510
 On peut voir que le résultat est cohérent car le CV passé en entrée est celui d'un élève ingénieur généraliste avec un profil orienté data, et donc que les offres qui ressortent sont totalement en accord avec ce profil. 
 
 ## II. Trouver les compétences manquantes 
+
+La deuxième partie de notre code consiste à récupérer les compétences demandées pour les 10 offres d'emploi renvoyées à l'étape précédente, puis à analyser de nouveau le contenu du CV pour identifier quelles compétences sont manquantes dans le profil de l'utilisateur. Cette partie est très similaire à celle précédente, excepté qu'ici on se concentre uniquement sur les compétences mentionnées dans les offres d'emploi, et qu'on cherche à faire une analyse de dissimilarité entre celles-ci et le CV plutôt qu'une analyse de simialrité. 
+
+### 1. Récupération des compétences requises 
+On commence par de nouveau explorer la base de données des offres de Pôle Emploi, sauf que cette fois-ci on se concentre sur les 10 offres que nous avons retenues dans la première partie du code. Cela est possible grâce à la fonction "classifier_offres_lda" présentées au I.4. qui nous renvoie la liste des ID des offres du classement et que nous pouvons ici passer en entrée. Nous pouvons alors récupérer, pour chacune des offres, toutes les compétences qui sont mentionnées et les stocker dans une liste.
+```ruby
+def data_competence(id_emploi, db):
+    import json
+
+    with open(db, "r") as file:
+      data = json.load(file)
+
+    # Liste pour stocker les tuples (ID, description)
+    Competences = []
+
+    # Parcourir chaque emploi dans les résultats
+    for id in id_emploi:
+        Comp1=[id]
+        for emploi_resultat in data['resultats']:
+            emploi_id = emploi_resultat.get('id', None)
+            if emploi_id == id:
+                emploi_competences = emploi_resultat.get('competences', None)
+                if emploi_competences is not None:
+                    for emploi_libelle in emploi_competences:
+                        if 'libelle' in emploi_libelle:
+                            Comp1.append(emploi_libelle['libelle'])
+        if len(Comp1)>1:
+            Competences.append(Comp1)
+    return Competences
+```
+### 2. Classement des compétences qui sont le moins présentes dans le CV
+Dans la mesure où les fonctions permettant de convertir le CV et d'analyser son contenu grâce à la méthode LDA ont déjà été définies dans la partie I, on peut ici directement les réutiliser. Nous avons alors uniquement à reprendre l'algorithme utilisé pour réaliser le classement des offres d'emploi les plus pertinentes, mais en appliquant la logique inverse : en effet, on veut cette fois, parmi la liste des compétences requises, trouver celles qui ont le score le plus faible en fonction des topics identifiés dans le CV. Ce seront alors ces compétences-ci qui sont les moins similaires au contenu du CV, et donc qui manquent à l'utilisateur pour répondre au mieux aux offres d'emploi qui lui sont proposées.
+```ruby
+def classifier_competence_lda(lien, Competences):
+    # Liste pour stocker les résultats
+    resultats_classification = []
+
+    lda_model, dictionary = biblio_CV(lien)
+
+    # Parcourir chaque competence dans la liste Competences
+    for competence in Competences:
+        id_offre=competence[0]
+        liste_par_offre=[]
+        liste_comp=competence[1:]
+        for comp in liste_comp:
+            # Tokenisation de la chaîne de texte
+            tokenized_doc = comp.split()
+
+            # Convertir le document en une représentation BoW à l'aide du dictionnaire existant
+            doc_bow = dictionary.doc2bow(tokenized_doc)
+
+            # Obtention de la distribution des topics pour le document
+            topic_distribution = lda_model.get_document_topics(doc_bow)
+
+            # Calcul de la moyenne des scores pour chaque topic
+            moyenne_scores = sum(score for topic, score in topic_distribution) / len(topic_distribution)
+
+            # Ajout du tuple (nom de la compétence, moyenne des scores) à la liste des résultats pour cette offre
+            liste_par_offre.append((comp, moyenne_scores))
+
+        # Tri des tuples selon le score croissant
+        sorted_tuples = sorted(liste_par_offre, key=lambda x: x[1])
+
+        # Select the first two tuples and remove the score
+        top_two_tuples = [t[0] for t in sorted_tuples[:2]]
+
+        # Ajout des résultats obtenus pour cette offre à la liste de tous les résultats
+        resultats_classification.append([[id_offre] + top_two_tuples])
+
+    return(resultats_classification)
+```
+Cette fonction renvoie une liste de 10 listes (ou moins si certaines offres ne demandant pas de compétences particulières), chaque sous-liste contenant l'ID de l'offre d'emploi en question et les 2 compétences qui ont obtenu le plus petit score lors du matching avec le CV.
+> [!NOTE]
+> Nous avons fait le choix pour chaque offre d'emploi de ne renvoyer que 2 compétences manquantes à l'utilisateur. En effet, comme il y a 10 offres d'emploi proposées, cela faisait très vite monter le nombre de formations professionnelles à proposer à l'utilisateur si l'on augmentait le
+> nombre de compétences manquantes pour chaque offre, et donnait des résultats peu lisibles. De plus, nous avons estimé que 2 compétences à acquérir, et donc potentiellement 2 formations professionnelles à suivre, était un effort déjà important à fournir pour l'utilisateur et suffisant
+> pour augmenter son employabilité.
+
+### 3. Test
+
+On teste l'algorithme en passant en entrée un CV d'étudiante ingénieure qui a déjà travaillé en banque et en centre aéré. On obtient pour le classement des offres d'emploi le résultat suivant : 
+```ruby
+[{'Classement': 1, "ID de l'offre": '162MCBY', "Intitulé de l'offre": 'Comptable fournisseurs (H/F)',  'Score': 0.333333358168602},
+ {'Classement': 2, "ID de l'offre": '162LVZW', "Intitulé de l'offre": 'Projeteur Electrotechnique (H/F)', 'Score': 0.3333333532015483},
+ {'Classement': 3, "ID de l'offre": '162KTDX', "Intitulé de l'offre": 'Chauffeur / Chauffeuse de poids lourd', 'Score': 0.3333333532015483},
+ {'Classement': 4, "ID de l'offre": '162GTNV', "Intitulé de l'offre": 'Tailleur / Tailleuse de pierre (H/F)', 'Score': 0.3333333532015483},
+ {'Classement': 5, "ID de l'offre": '162FVCC', "Intitulé de l'offre": 'Manipulateur / Manipulatrice en imagerie médicale', 'Score': 0.3333333532015483},
+ {'Classement': 6, "ID de l'offre": '162KSZN', "Intitulé de l'offre": 'Ouvrier / Ouvrière Voiries et Réseaux Divers -VRD-', 'Score': 0.3333333507180214},
+ {'Classement': 7, "ID de l'offre": '162LZHP', "Intitulé de l'offre": "Ouvrier polyvalent / Ouvrière polyvalente d'entretien des bâtiments", 'Score': 0.33333335009713966},
+ {'Classement': 8, "ID de l'offre": '162MFHM', "Intitulé de l'offre": 'DIRECTEUR MICRO CRECHE (H/F)', 'Score': 0.3333333482344945},
+ {'Classement': 9, "ID de l'offre": '162MCXY', "Intitulé de l'offre": 'Comptable clientèle (H/F)', 'Score': 0.3333333482344945},
+ {'Classement': 10, "ID de l'offre": '162LQWR', "Intitulé de l'offre": "Apporteur d'Affaires Matériels Agricoles (H/F)", 'Score': 0.3333333482344945}]
+```
+La deuxième partie du code nous permet alors d'identifier les compétences manquantes suivantes :
+```ruby
+[[['162MCBY',
+   'Établir un état de rapprochement bancaire',
+   'Organiser et contrôler un approvisionnement']],
+ [['162LVZW',
+   'Comprendre, interpréter des données et documents techniques',
+   'Relever, contrôler, ajuster des mesures et dosages']],
+ [['162KTDX',
+   'Organiser le chargement des marchandises dans le véhicule',
+   'Définir un itinéraire en fonction des consignes de livraison']],
+ [['162GTNV',
+   'Déterminer le positionnement des pierres',
+   "Sélectionner des blocs de pierre selon les caractéristiques de l'objet à tailler"]],
+ [['162FVCC',
+   'Développer un cliché médical',
+   "Préparer les accessoires (films, caches, matériel médicochirurgical, ...) et informer la personne sur le déroulement de l'examen"]],
+ [['162KSZN',
+   "Sécuriser le périmètre d'intervention",
+   "Positionner des repères d'ouvrages sur un chantier"]],
+ [['162LZHP',
+   'Préparer un support, une matière',
+   "Entretenir l'installation sanitaire, de chauffage et de production d'eau chaude"]],
+ [['162MFHM',
+   "Recueillir les informations sur l'environnement de vie et l'état de santé de l'enfant",
+   'Organiser des formations en prévention des risques']],
+ [['162MCXY',
+   'Chiffrage/calcul de coût',
+   'Établir, mettre à jour un dossier, une base de données']],
+ [['162LQWR',
+   'Établir un plan de tournée de prospection (ciblage, interlocuteurs, préparation de dossiers techniques)',
+   'Conseiller, accompagner une personne']]]
+```
+Le résultat des compétences est cohérent avec les offres d'emploi, et ces compétences sont effectivement des compétences qui sont manquantes dans le profil de la personne dont on a utilisé le CV (exceptées peut-être les compétences renvoyées pour l'offre n°9 de Comptable clientèle, ID 162MCXY).
 
 ## III. Le matching des compétences manquantes avec les formations professionnelles 
