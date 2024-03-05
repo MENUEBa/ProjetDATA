@@ -440,3 +440,13 @@ La deuxième partie du code nous permet alors d'identifier les compétences manq
 Le résultat des compétences est cohérent avec les offres d'emploi, et ces compétences sont effectivement des compétences qui sont manquantes dans le profil de la personne dont on a utilisé le CV (exceptées peut-être les compétences renvoyées pour l'offre n°9 de Comptable clientèle, ID 162MCXY).
 
 ## III. Le matching des compétences manquantes avec les formations professionnelles 
+
+La dernière grande partie du code doit nous permettre de renvoyer les formations professionnelles qui vont permettre à l'utilisateur d'acquérir les compétences manquantes identifiées dans la partie II. Une fois de plus, il s'agit donc essentiellement de faire du Natural Language Processing, mais cette fois non pas sur un document PDF (le CV) mais sur un document CSV (la liste des formations professionnelles).
+
+> [!NOTE]
+> Nous n'avons pas trouvé sur le site des données Pôle Emploi ou sur data.gouv d'API pour les formations professionnelles. Cela nous aurait permis d'avoir des données actualisées en permanence, mais nous avons malheureusement uniquement trouvé des données statiques téléchargeables sous
+> format csv. Nous avons donc fait le choix d'utiliser comme base de données des formations celle disponible sur data.gouv.fr contenant les formations professionnelles pouvant être financées à l'aide du Compte personnel de formation (CPF). Cela nous a semblé être un bon choix car l'offre
+> de formations est très large, tout le monde y a droit grâce à son CPF et les données sont mises à jour de manière quasiment quotidienne. Le fichier csv des formations professionnelles que nous utiliserons a ainsi été téléchargé le 10/01/2024 depuis le lien suivant :
+> https://www.data.gouv.fr/fr/datasets/moncompteformation-loffre-de-formation/#/resources.  
+> Pour une meilleure pertinence des résultats, il faudrait re-télécharger régulièrement cette base de données afin d'en fournir une plus actualisée lors de l'utilisation de notre code. 
+
