@@ -1,9 +1,9 @@
 # Projet DATA
 
-MENUE Baptiste
-BUTTI GARNIER Zoe
-BARATA Wendel
-DE OLIVEIRA Hassan Augusto B.
+MENUE Baptiste  
+BUTTI GARNIER Zoe  
+BARATA Wendel  
+DE OLIVEIRA Hassan Augusto B.  
 
 **Objectif** : À partir des données de Pôle Emploi, réaliser de bout en bout un projet de Data Science pour répondre à un besoin business
 
@@ -11,12 +11,16 @@ DE OLIVEIRA Hassan Augusto B.
 
 Avant de réfléchir à un besoin business, et donc au sujet de notre projet, nous avons commencé par nous connecter à l'API de Pôle Emploi et requêter sur celle-ci afin de voir le type des données que nous allions devoir étudier.
 
-**Code Requete.py**
-> {"resultats":[{"id":"162MRQR","intitule":"Enseignant(e) de la conduite et  de la sécurité routière (H/F)","description":"Nous recherchons un(e) enseignant(e), titulaire du BEPECASER ou du TP ECS avec la mention B et/ou la mention BE et/ou  A serait un plus.\n\nOuverture de l'Auto Ecole du lundi au samedi. Votre p .... etc 
+```ruby
+{"resultats":[{"id":"162MRQR",
+"intitule":"Enseignant(e) de la conduite et  de la sécurité routière (H/F)",
+"description": "Nous recherchons un(e) enseignant(e), titulaire du BEPECASER ou du TP ECS avec la mention B et/ou la mention BE et/ou  A serait un plus.\n\nOuverture de l'Auto Ecole du lundi au samedi. Votre p.."
+etc 
+```
 
-**Conclusion** 
+**Résultat** 
 
-L'API nous permet d'obtenir un fichier Json organisé de la manière suivante pour chaque offre d'emploi : 
+Nous observons ainsi que l'API nous permet d'obtenir un fichier JSON organisé de la manière suivante pour chaque offre d'emploi : 
 
 - Resultats 
     - id 
@@ -45,18 +49,18 @@ Le simple matching des CV nous semblait être une idée intéressante et accessi
 
 **Conclusion**
 
-Objectif final : faire une application qui, à partir d'un CV, propose un matching sur plusieurs offres d'emploi, puis renvoie vers des formations complémentaires adaptées et proposées par l'Etat pour les emplois où il y aurait des lacunes en termes de compétences.
+**Objectif final** : faire une application qui, à partir d'un CV, propose un matching sur plusieurs offres d'emploi, puis renvoie vers des formations complémentaires adaptées et proposées par l'Etat pour les emplois où il y aurait des lacunes en termes de compétences.
 
 La démarche consistera donc ici à prédire, à partir des données d'un CV fourni et de celles présentes sur Pôle Emploi, quelles offres d'emploi sont les plus proches du profil d'un professionnel. Ensuite, il faut identifier quelles sont les différences notables, en termes de connaissances et de compétences, entre le CV de la personne et les prérequis demandés dans l'offre d'emploi. Finalement, à partir des différences identifiées, il faudra identifier quelle formation professionnelle existante permettrait de combler ces différences et d'apporter au professionnel les connaissances et compétences manquantes.
 
 ### 3. Les étapes du code
 
-Ensuite, nous avons déterminé que pour pouvoir réaliser cette idée business, nous allions devoir procéder en trois temps : 
-I. Tout d'abord, réaliser le matching de CV avec les offres présentes sur l'API de Pôle Emploi pour trouver les offres d'emploi qui collent le plus avec le CV en question
-II. Dans un second temps, récupérer les compétences requises pour ces offres d'emploi-là et identifier celles qui sont manquantes dans le CV
-III. Enfin, proposer des formations professionnelles permettant d'acquérir ces compétences manquantes. 
+Ensuite, nous avons déterminé que pour pouvoir réaliser cette idée business, nous allions devoir procéder en trois temps :   
+I. Tout d'abord, réaliser le matching de CV avec les offres présentes sur l'API de Pôle Emploi pour trouver les offres d'emploi qui collent le plus avec le CV en question  
+II. Dans un second temps, récupérer les compétences requises pour ces offres d'emploi-là et identifier celles qui sont manquantes dans le CV  
+III. Enfin, proposer des formations professionnelles permettant d'acquérir ces compétences manquantes.   
 
-## 0. la base de données : les offres de Pôle Emploi
+## 0. La base de données : les offres de Pôle Emploi
 
 Dans un premier temps, nous avions suivi le tutoriel fourni pour nous connecter à l'API. Puis nous avons souhaité trouver le moyen de ne plus devoir passer par l'API et systématiquement devoir copier coller l'accès pour ensuite la mettre dans notre jupyter NoteBook, mais plutôt créé un code python qui vienne de lui-même récupérer l'accès. C'est en quelque sorte le début de l'automatisation de notre projet.
 
@@ -122,7 +126,7 @@ def cree_db():
 > [!NOTE]
 > L'ensemble du code permettant d'accéder à l'API et de stocker les données dans une base de données est : Cree_db_pole_emploi.py
 
-L'avantage de cette solution est qu'elle permet de contourner le problème d'expiration de l'autorisation d'accès à l'API de Pôle Emploi et fais en sorte que n'importe qui puisse utiliser notre code avec les données de Pôle Emploi, et ce y compris dans plusieurs mois. 
+L'avantage de cette solution est qu'elle permet de contourner le problème d'expiration de l'autorisation d'accès à l'API de Pôle Emploi et fait en sorte que n'importe qui puisse utiliser notre code avec les données de Pôle Emploi, et ce y compris dans plusieurs mois. 
 
 L'inconvénient est que du coup nous n'avons pas des données qui s'actualisent en permanence avec les nouvelles offres d'emploi comme lorsque l'on passe directement par l'API, car on crée une base de données à un instant t qui après n'est plus modifiée. Malheureusement, nous n'avons pas trop d'autres solutions si l'on veut pouvoir industrialiser le projet. On pourra simplement faire attention à réactualiser manuellement régulièrement la base de données en refaisant tourner le code "Cree_db_pole_emploi.py" pour fournir à l'utilisateur une base de données qui ne date pas trop.
 
@@ -179,7 +183,7 @@ def extract_text_from_pdf(pdf_file: str) -> [str]:
 Tout au long de ce projet, lorsqu'il était question d'analyser du texte, nous avons fait le choix d'utiliser la méthode de Machine Learning LDA. 
 
 > [!NOTE]
-> LDA (Latent Dirichlet Allocation) est une des techniques de Natural Language Processing les plus connues. C’est une méthode probabiliste qui repose sur de l’apprentissage non supervisé, basée sur l'hypothèse que les documents sont générés à
+> **LDA (Latent Dirichlet Allocation)** est une des techniques de Natural Language Processing les plus connues. C’est une méthode probabiliste qui repose sur de l’apprentissage non supervisé, basée sur l'hypothèse que les documents sont générés à
 > partir d'un mélange de sujets, et chaque sujet est une distribution de mots. Son objectif est alors d’extraire les sujets et thèmes principaux, représentés par un ensemble de mots, qui apparaissent dans un texte. Elle fonctionne globalement
 > ainsi :
 > 1. Données d'entrée : Un ensemble de documents texte.
@@ -313,4 +317,321 @@ On peut voir que le résultat est cohérent car le CV passé en entrée est celu
 
 ## II. Trouver les compétences manquantes 
 
-## III. Le matching des compétences manquantes avec les formations professionnelles 
+La deuxième partie de notre code consiste à récupérer les compétences demandées pour les 10 offres d'emploi renvoyées à l'étape précédente, puis à analyser de nouveau le contenu du CV pour identifier quelles compétences sont manquantes dans le profil de l'utilisateur. Cette partie est très similaire à celle précédente, excepté qu'ici on se concentre uniquement sur les compétences mentionnées dans les offres d'emploi, et qu'on cherche à faire une analyse de dissimilarité entre celles-ci et le CV plutôt qu'une analyse de simialrité. 
+
+### 1. Récupération des compétences requises 
+On commence par de nouveau explorer la base de données des offres de Pôle Emploi, sauf que cette fois-ci on se concentre sur les 10 offres que nous avons retenues dans la première partie du code. Cela est possible grâce à la fonction "classifier_offres_lda" présentées au I.4. qui nous renvoie la liste des ID des offres du classement et que nous pouvons ici passer en entrée. Nous pouvons alors récupérer, pour chacune des offres, toutes les compétences qui sont mentionnées et les stocker dans une liste.
+```ruby
+def data_competence(id_emploi, db):
+    import json
+
+    with open(db, "r") as file:
+      data = json.load(file)
+
+    # Liste pour stocker les tuples (ID, description)
+    Competences = []
+
+    # Parcourir chaque emploi dans les résultats
+    for id in id_emploi:
+        Comp1=[id]
+        for emploi_resultat in data['resultats']:
+            emploi_id = emploi_resultat.get('id', None)
+            if emploi_id == id:
+                emploi_competences = emploi_resultat.get('competences', None)
+                if emploi_competences is not None:
+                    for emploi_libelle in emploi_competences:
+                        if 'libelle' in emploi_libelle:
+                            Comp1.append(emploi_libelle['libelle'])
+        if len(Comp1)>1:
+            Competences.append(Comp1)
+    return Competences
+```
+### 2. Classement des compétences qui sont le moins présentes dans le CV
+Dans la mesure où les fonctions permettant de convertir le CV et d'analyser son contenu grâce à la méthode LDA ont déjà été définies dans la partie I, on peut ici directement les réutiliser. Nous avons alors uniquement à reprendre l'algorithme utilisé pour réaliser le classement des offres d'emploi les plus pertinentes, mais en appliquant la logique inverse : en effet, on veut cette fois, parmi la liste des compétences requises, trouver celles qui ont le score le plus faible en fonction des topics identifiés dans le CV. Ce seront alors ces compétences-ci qui sont les moins similaires au contenu du CV, et donc qui manquent à l'utilisateur pour répondre au mieux aux offres d'emploi qui lui sont proposées.
+```ruby
+def classifier_competence_lda(lien, Competences):
+    # Liste pour stocker les résultats
+    resultats_classification = []
+
+    lda_model, dictionary = biblio_CV(lien)
+
+    # Parcourir chaque competence dans la liste Competences
+    for competence in Competences:
+        id_offre=competence[0]
+        liste_par_offre=[]
+        liste_comp=competence[1:]
+        for comp in liste_comp:
+            # Tokenisation de la chaîne de texte
+            tokenized_doc = comp.split()
+
+            # Convertir le document en une représentation BoW à l'aide du dictionnaire existant
+            doc_bow = dictionary.doc2bow(tokenized_doc)
+
+            # Obtention de la distribution des topics pour le document
+            topic_distribution = lda_model.get_document_topics(doc_bow)
+
+            # Calcul de la moyenne des scores pour chaque topic
+            moyenne_scores = sum(score for topic, score in topic_distribution) / len(topic_distribution)
+
+            # Ajout du tuple (nom de la compétence, moyenne des scores) à la liste des résultats pour cette offre
+            liste_par_offre.append((comp, moyenne_scores))
+
+        # Tri des tuples selon le score croissant
+        sorted_tuples = sorted(liste_par_offre, key=lambda x: x[1])
+
+        # Select the first two tuples and remove the score
+        top_two_tuples = [t[0] for t in sorted_tuples[:2]]
+
+        # Ajout des résultats obtenus pour cette offre à la liste de tous les résultats
+        resultats_classification.append([[id_offre] + top_two_tuples])
+
+    return(resultats_classification)
+```
+Cette fonction renvoie une liste de 10 listes (ou moins si certaines offres ne demandant pas de compétences particulières), chaque sous-liste contenant l'ID de l'offre d'emploi en question et les 2 compétences qui ont obtenu le plus petit score lors du matching avec le CV.
+> [!NOTE]
+> Nous avons fait le choix pour chaque offre d'emploi de ne renvoyer que 2 compétences manquantes à l'utilisateur. En effet, comme il y a 10 offres d'emploi proposées, cela faisait très vite monter le nombre de formations professionnelles à proposer à l'utilisateur si l'on augmentait le
+> nombre de compétences manquantes pour chaque offre, et donnait des résultats peu lisibles. De plus, nous avons estimé que 2 compétences à acquérir, et donc potentiellement 2 formations professionnelles à suivre, était un effort déjà important à fournir pour l'utilisateur et suffisant
+> pour augmenter son employabilité.
+
+### 3. Test
+
+On teste l'algorithme en passant en entrée un CV d'étudiante ingénieure qui a déjà travaillé en banque et en centre aéré. On obtient pour le classement des offres d'emploi le résultat suivant : 
+```ruby
+[{'Classement': 1, "ID de l'offre": '162MCBY', "Intitulé de l'offre": 'Comptable fournisseurs (H/F)',  'Score': 0.333333358168602},
+ {'Classement': 2, "ID de l'offre": '162LVZW', "Intitulé de l'offre": 'Projeteur Electrotechnique (H/F)', 'Score': 0.3333333532015483},
+ {'Classement': 3, "ID de l'offre": '162KTDX', "Intitulé de l'offre": 'Chauffeur / Chauffeuse de poids lourd', 'Score': 0.3333333532015483},
+ {'Classement': 4, "ID de l'offre": '162GTNV', "Intitulé de l'offre": 'Tailleur / Tailleuse de pierre (H/F)', 'Score': 0.3333333532015483},
+ {'Classement': 5, "ID de l'offre": '162FVCC', "Intitulé de l'offre": 'Manipulateur / Manipulatrice en imagerie médicale', 'Score': 0.3333333532015483},
+ {'Classement': 6, "ID de l'offre": '162KSZN', "Intitulé de l'offre": 'Ouvrier / Ouvrière Voiries et Réseaux Divers -VRD-', 'Score': 0.3333333507180214},
+ {'Classement': 7, "ID de l'offre": '162LZHP', "Intitulé de l'offre": "Ouvrier polyvalent / Ouvrière polyvalente d'entretien des bâtiments", 'Score': 0.33333335009713966},
+ {'Classement': 8, "ID de l'offre": '162MFHM', "Intitulé de l'offre": 'DIRECTEUR MICRO CRECHE (H/F)', 'Score': 0.3333333482344945},
+ {'Classement': 9, "ID de l'offre": '162MCXY', "Intitulé de l'offre": 'Comptable clientèle (H/F)', 'Score': 0.3333333482344945},
+ {'Classement': 10, "ID de l'offre": '162LQWR', "Intitulé de l'offre": "Apporteur d'Affaires Matériels Agricoles (H/F)", 'Score': 0.3333333482344945}]
+```
+La deuxième partie du code nous permet alors d'identifier les compétences manquantes suivantes :
+```ruby
+[[['162MCBY',
+   'Établir un état de rapprochement bancaire',
+   'Organiser et contrôler un approvisionnement']],
+ [['162LVZW',
+   'Comprendre, interpréter des données et documents techniques',
+   'Relever, contrôler, ajuster des mesures et dosages']],
+ [['162KTDX',
+   'Organiser le chargement des marchandises dans le véhicule',
+   'Définir un itinéraire en fonction des consignes de livraison']],
+ [['162GTNV',
+   'Déterminer le positionnement des pierres',
+   "Sélectionner des blocs de pierre selon les caractéristiques de l'objet à tailler"]],
+ [['162FVCC',
+   'Développer un cliché médical',
+   "Préparer les accessoires (films, caches, matériel médicochirurgical, ...) et informer la personne sur le déroulement de l'examen"]],
+ [['162KSZN',
+   "Sécuriser le périmètre d'intervention",
+   "Positionner des repères d'ouvrages sur un chantier"]],
+ [['162LZHP',
+   'Préparer un support, une matière',
+   "Entretenir l'installation sanitaire, de chauffage et de production d'eau chaude"]],
+ [['162MFHM',
+   "Recueillir les informations sur l'environnement de vie et l'état de santé de l'enfant",
+   'Organiser des formations en prévention des risques']],
+ [['162MCXY',
+   'Chiffrage/calcul de coût',
+   'Établir, mettre à jour un dossier, une base de données']],
+ [['162LQWR',
+   'Établir un plan de tournée de prospection (ciblage, interlocuteurs, préparation de dossiers techniques)',
+   'Conseiller, accompagner une personne']]]
+```
+Le résultat des compétences est cohérent avec les offres d'emploi, et ces compétences sont effectivement des compétences qui sont manquantes dans le profil de la personne dont on a utilisé le CV (exceptées peut-être les compétences renvoyées pour l'offre n°9 de Comptable clientèle, Id 162MCXY).
+
+## III. Proposer des formations professionnelles adaptées 
+
+La dernière grande partie du code doit nous permettre de renvoyer les formations professionnelles qui vont permettre à l'utilisateur d'acquérir les compétences manquantes identifiées dans la partie II. 
+
+> [!NOTE]
+> Nous n'avons pas trouvé sur le site des données Pôle Emploi ou sur data.gouv d'API pour les formations professionnelles. Cela nous aurait permis d'avoir des données actualisées en permanence, mais nous avons malheureusement uniquement trouvé des données statiques téléchargeables sous
+> format csv. Nous avons donc fait le choix d'utiliser comme base de données des formations celle disponible sur data.gouv.fr contenant les formations professionnelles pouvant être financées à l'aide du Compte personnel de formation (CPF). Cela nous a semblé être un bon choix car l'offre
+> de formations est très large, tout le monde y a droit grâce à son CPF et les données sont mises à jour de manière quasiment quotidienne.  
+> Le fichier csv des formations professionnelles que nous utiliserons a ainsi été téléchargé le 10/01/2024 depuis le lien suivant :
+> https://www.data.gouv.fr/fr/datasets/moncompteformation-loffre-de-formation/#/resources.  
+> Pour une meilleure pertinence des résultats, il faudrait re-télécharger régulièrement cette base de données afin d'en fournir une plus actualisée lors de l'utilisation de notre code. 
+
+### 1. Le matching des compétences manquantes avec les formations
+
+Une fois de plus, il s'agit essentiellement de faire du Natural Language Processing, mais cette fois non pas sur un document PDF (le CV) mais sur un document CSV (la liste des formations professionnelles). Nous avons fait le choix cette fois de varier nos méthodes et de ne pas utiliser la librairie PyPDF2 et la technique de LDA mais plutôt une vectorisation de texte par la méthode TF-IDF et une analyse de similarité cosinus, grâce aux fonctions de la libraire sklearn.
+
+> [!NOTE]
+> La **vectorisation TF-IDF (Term Frequency - Inverse Document Frequency)** est une technique de pondération utilisée en traitement du langage naturel (NLP) pour évaluer l'importance d'un mot dans un document par rapport à un ensemble de documents. Le calcul de TF-IDF se base sur deux
+> composantes :
+> 1. La **fréquence d'un terme dans un document (TF)**: Plus le mot m apparait dans le document d, plus sa valeur TF est élevée.  La formule de base est : **TF(m, d) = nb_occurrences(m, d) / nb_mots_total(d)**.
+> 2. La **rareté d'un terme dans un ensemble de documents (IDF)**: Plus le mot m est rare dans l'ensemble de documents D, plus sa valeur IDF est élevée. La formule de base est : **IDF(m, D) = log(nb_documents(D) / nb_documents_contenant(m, D))**.
+> 3. Le calcul de TF-IDF est ainsi le produit de TF et IDF : **TF-IDF(m, d, D) = TF(m, d) * IDF(m, D)**. Cette pondération permet de donner plus d'importance aux mots fréquents dans un document mais rares dans l'ensemble des documents.
+
+> [!NOTE]
+> La **similarité cosinus** est une mesure utilisée en analyse de texte et en traitement du langage naturel pour évaluer la similitude entre deux vecteurs de caractéristiques. Elle consiste à calculer le cosinus de l'angle entre deux vecteurs A et B :  
+> **Similarité cosinus (A,B) = produit scalaire entre A et B /( Normme euclidienne de A * Norme euclidienne de B )**  
+> Le résultat ainsi obtenu est compris entre -1 et 1. Une similarité de 1 indique que les vecteurs sont identiques, 0 indique une indépendance linéaire (pas de similitude), et -1 indique une dissimilarité parfaite.  
+
+La méthode utilisée ici est ainsi la suivante :
+1. On crée une liste de phrases avec les informations qui nous intéressent concernant toutes les formations professionnelles proposées.  
+2. Pour chaque offre d'emploi, on ajoute chaque compétence manquante dans la liste précédente sous forme d'une phrase également.  
+3. On crée alors une matrice TF-IDF pour convertir ces phrases en une matrice de caractéristiques, une des dimensions de la matrice étant les formations et l'autre la compétence manquante en question.
+4. On calcule ensuite la similarité cosinus entre la compétence cherchée et les formations grâce à la matrice précédente.  
+5. On classe les formations en fonction de leur similairité avec la compétence et on ne garde que les 3 meilleures.
+
+```ruby
+def formation(liste_comp, catalogue_formations):
+    import pandas as pd
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.metrics.pairwise import cosine_similarity
+    import json
+
+    df = pd.read_csv(catalogue_formations, on_bad_lines='skip', sep=';', low_memory=False)
+
+    desired_columns = ['numero_formation', 'intitule_formation', 'points_forts']
+    df_selected = df[desired_columns]
+
+    resultat_du_dictionnaire = df_selected.to_dict(orient='records')
+
+    nom_fichier_sortie = "resultats_formations.json"
+
+    # Liste pour stocker les résultats au format JSON
+    resultats_json = []
+
+    for comp_par_emploi1 in liste_comp:
+        comp_par_emploi2 = comp_par_emploi1[0]
+        id_offre, competence_cherche_list = comp_par_emploi2[0], comp_par_emploi2[1:]
+
+        # Dictionnaire pour stocker les résultats
+        resultat_par_competence = {"Id de l'offre d'emploi": id_offre, "Competences": []}
+
+        for competence_cherche in competence_cherche_list:
+            # Liste des phrases dans resultat_du_dictionnaire
+            phrases = [str(item.get('points_forts', [])) for item in resultat_du_dictionnaire]
+
+            # Ajout de la phrase d'intérêt à la liste
+            phrases.append(competence_cherche)
+
+            # Création de la matrice TF-IDF
+            vectorizer = TfidfVectorizer()
+            tfidf_matrix = vectorizer.fit_transform(phrases)
+
+            # Calcul de la similarité du cosinus entre les phrases
+            similarites = cosine_similarity(tfidf_matrix[-1], tfidf_matrix[:-1])
+
+            # Obtenir les indices triés des phrases les plus similaires
+            indices_similaires = similarites.argsort()[0][::-1]
+
+            # Limiter le nombre de correspondances à ajouter à la liste de formations
+            limite_correspondances = 3
+            formations = [resultat_du_dictionnaire[i] for i in indices_similaires[:limite_correspondances]]
+
+            # Stocker les résultats dans le dictionnaire
+            resultat_competence = {"Competence": competence_cherche, "Formations": []}
+
+            for formacao in formations:
+                formation_dict = {
+                    "Numéro formation": formacao['numero_formation'],
+                    "Intitulé": formacao['intitule_formation'],
+                    "Points forts": formacao['points_forts']
+                }
+                resultat_competence["Formations"].append(formation_dict)
+
+            resultat_par_competence["Competences"].append(resultat_competence)
+
+        resultats_json.append(resultat_par_competence)
+
+    # Enregistrer la liste des résultats au format JSON
+    with open(nom_fichier_sortie, 'w', encoding='utf-8') as fichier_sortie_json:
+        json.dump(resultats_json, fichier_sortie_json, ensure_ascii=False, indent=2)
+
+    return resultats_json
+```
+Cette fonction prend en entrée la liste des compétences manquantes à l'utilisateur ainsi que la base de données csv contenant le détail des formations professionnelles, et renvoie un document JSON contenant pour chacune des 10 offres et chacune des 2 compétences associées, 3 formations qui devraient permettre d'acquérir cette compétence --> soit au total 60 formations.   
+Nous avons fait le choix d'avoir un format JSON en sortie de manière à avoir un résultat plus clair et plus présentable pour l'utilisateur.
+
+> [!NOTE]
+> On voit que le nombre de suggestions de formations renvoyé est très important. Toutefois, il s'est avéré nécéssaire pour chaque compétence de fournir plusieurs propositions de formations, car nous nous sommmes rendu compte que les résultats ne sont pas toujours tous pertinents. Cela est
+> notamment liés au fait  que les descriptions des formations ne sont pas toujours très complètes et détaillées, ce qui rend le matching plus difficile, ainsi qu'au fait que les mots et phrases utilisées pour décrire les compétences sont parfois très génériques et donc peuvent être
+> reliées à une très grande variété de formations (par exemple "personnel", "contrôler", "organiser", "comprendre"...)  
+> Nous nous sommes ainsi dit qu'en proposant 3 formations par compétence, cela permettait à l'utilisateur d'avoir suffisamment de choix pour sélectionner la formation qui soit vraiment la plus pertinente en fonction de son profil, de ses besoins, de ses capacités, et des offres d'emploi
+> qui l'intéressent le plus.
+
+### 2. Test
+
+En utilisant en entrée la liste des compétences manquantes obtenues au point II.3., ainsi que notre base de données recensant les formations professionnelles, la fonction "formation" nous renvoie le résultat sous format JSON suivant :
+```ruby
+[{"Id de l'offre d'emploi": '162MCBY',
+  'Competences': [{'Competence': 'Établir un état de rapprochement bancaire',
+    'Formations': [{'Numéro formation': '13002267600030_P208',
+      'Intitulé': 'Traiter la paie (Certificat de Compétences en Entreprise-CCE)',
+      'Points forts': "Maîtrise des compétences clés permettant de préparer et établir la paie et l'obtention d'un Certificat de Compétences en Entreprise reconnu par l'état."},
+     {'Numéro formation': '13002267600030_P208',
+      'Intitulé': 'Traiter la paie (Certificat de Compétences en Entreprise-CCE)',
+      'Points forts': "Maîtrise des compétences clés permettant de préparer et établir la paie et l'obtention d'un Certificat de Compétences en Entreprise reconnu par l'état."},
+     {'Numéro formation': '81290071000029_WP',
+      'Intitulé': 'Créer et administrer un site internet avec WordPress pour une TPE/PME',
+      'Points forts': "Formation reconnue par l'état"}]},
+   {'Competence': 'Organiser et contrôler un approvisionnement',
+    'Formations': [{'Numéro formation': '81034790600010_SSIAP2',
+      'Intitulé': 'SSIAP2',
+      'Points forts': 'manager et organiser'},
+     {'Numéro formation': '48276116000019_ZAP',
+      'Intitulé': "Parcours certifiant Élaboration d'une stratégie d'achat et d'approvisionnement",
+      'Points forts': "Parcours certifiant Élaboration d'une stratégie d'achat et d'approvisionnement Bloc de compétences d'un titre RNCP"},
+     {'Numéro formation': '18770918300235_BP-ARTS-CUISINE-2020',
+      'Intitulé': 'BP Arts de la Cuisine',
+      'Points forts': '- Organiser et gérer les postes de travail \n\n- Concevoir et organiser des prestations de restauration'}]}]},
+ {"Id de l'offre d'emploi": '162LVZW',
+  'Competences': [{'Competence': 'Relever, contrôler, ajuster des mesures et dosages',
+    'Formations': [{'Numéro formation': '79883605200026_CQPTECHNICIENCORDISTE119H',
+      'Intitulé': 'CQP TECHNICIEN CORDISTE',
+      'Points forts': "Veiller à l'application des mesures de prévention.\nAppliquer une méthode de secours complexe.\nProgresser en hauteur dans des situations complexes.\nInstaller et contrôler des systèmes d'accès.\nUtiliser et contrôler les appareils (EPI et accessoires)"},
+     {'Numéro formation': '42169477900057_RFFR1',
+      'Intitulé': 'FastReporter, analyse et reporting des mesures optiques',
+      'Points forts': 'Cette formation FastReporter vous apprend à contrôler, analyser et consolider les résultats de mesures sur les réseaux de fibre optique.'},
+...
+```
+Nous n'avons affiché ici que le premiers résultats car sinon cela aurait été trop long.  
+On peut voir que les formations proposées sont à chaque fois cohérentes avec la compétence et l'intitulé de l'offre d'emploi. On peut noter toutefois que pour la première offre d'emploi (Id '162MCBY'), on a la même formation qui est proposée deux fois. Après vérification dans le fichier catalogue des formations professionnelles, nous nous sommes rendu compte que ce problème est lié au fait que celle-ci soit mal faite et qu'elle contienne parfois deux fois la même formation. La qualité de nos résultats est donc malheureusement très dépendante de celle du fichier.
+
+## Finalisation 
+
+### 1. Fonction finale
+Nous disposons désormais de toutes les fonctions dont nous avons besoin pour obtenir ce que nous voulons. Nous créons alors simplement une fonction finale qui permet de toutes les réunir et les executer à partir des trois inputs dont nous avons besoin : le CV de l'utilisateur (sous format PDF), la base de données concernant les offres Pôle Emploi (sous format JSON), et le catalogue des formations professionnelles pouvant être financées à l'aide du CPF (sous format csv).
+```ruby
+def final(CV, database, catalogue_formations):
+  id_emploi_resultat, classement_offres = classifier_offres_lda(CV, 10, database)
+  liste_comp=data_competence(id_emploi_resultat, database)
+  liste_comp_manquantes=classifier_competence_lda(CV, liste_comp)
+  resultats_formations=formation(liste_comp_manquantes, catalogue_formations)
+  return classement_offres, resultats_formations
+```
+**Conclusion**  
+  
+Cette fonction renvoie ainsi le classement des 10 offres d'empoi qui correspondent le mieux au profil de l'utilisateur ('classsement_offres'), ainsi que'une liste, pour les compétences qui lui sont manquantes pour chacune de ces 10 offres, de formations professionnelles permettant d'acquérir ces compétences. De cette manière, l'utilisateur a en main toutes les informations dont il a besoin pour se reconvertir et correspondre au mieux aux offres d'emploi qui l'intéressent le plus.
+
+### 2. Industrialisation
+Pour l'industrialisation de notre code, nous avons fait le choix d'utiliser Gradio car cette solution nous a semblé plutôt simple à prendre en main, facilement intégrable à un code Python, et qui prend en charge tout type de format en entrée comme en sortie. Cela nous permet alors de créer une interface web esthétique et simple pour l'utilisateur, qui n'a plus qu'à déposer sur la page web en question son CV ainsi que les deux bases de données utilisées pour le matching (les offres d'emploi et les formations professionnelles). 
+
+> [!NOTE]
+> Gradio est une bibliothèque open source en Python qui facilite la création d'interfaces utilisateur pour les modèles d'apprentissage automatique de manière rapide et accessible. Cette bibliothèque permet aux développeurs de créer rapidement des interfaces utilisateur interactives pour
+> les modèles, sans nécessiter une expertise approfondie en conception d'interface utilisateur. Cela facilite ainsi la démonstration, le test et le partage des modèles avec d'autres personnes.
+
+```ruby
+pip install gradio
+
+import gradio as gr
+import json
+import http.client
+from io import BytesIO
+import tempfile
+
+iface = gr.Interface(fn=final, inputs=["file", "file", "file"], outputs=["json", "json"])
+iface.launch()
+```
+**Conclusion**  
+  
+Et voilà, grâce à cette dernière étape notre code est finalement complet et prêt à être utilisé par n'importe quel utilisateur en quête de reconversion professionnelle !
+
+> [!NOTE]
+> L'ensemble du code présenté dans les parties I, II et III, ainsi que la fonction finale et les lignes permettant l'industrialisation avec Gradio sont contenus dans le fichier : to_run.py
